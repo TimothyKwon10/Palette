@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'PlayfairDisplay'; 
+    src: url('./assets/fonts/PlayfairDisplay-Medium.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
