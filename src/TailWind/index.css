@@ -4,7 +4,7 @@
 
 @font-face {
     font-family: 'PlayfairDisplay'; 
-    src: url('./assets/fonts/PlayfairDisplay-Medium.ttf') format('truetype');
+    src: url('../assets/fonts/Playfair_Display/static/PlayfairDisplay-Medium.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
   }

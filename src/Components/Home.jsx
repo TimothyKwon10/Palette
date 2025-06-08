@@ -3,3 +3,5 @@ function Home() {
         <h1>HELLO WORLD</h1>
     );
 }
+
+export default Home;

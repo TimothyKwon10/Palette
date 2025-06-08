@@ -1,9 +1,10 @@
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { auth } from '../../FireBase/firebase';
 import { useNavigate } from 'react-router-dom'
 import PaintBanner from '../../assets/images/PaintBanner.jpg';
 import { FaGoogle } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 function Register() {
     //use states for different fields and page state 
@@ -17,7 +18,7 @@ function Register() {
         e.preventDefault();
         try {
             await createUserWithEmailAndPassword(auth, email, password);
-            navigate('../Home.jsx');
+            navigate('/Home');
         }
         catch (err) {
             console.log("ERROR WITH REGISTER");
@@ -29,7 +30,7 @@ function Register() {
         e.preventDefault();
         try {
             await signInWithPopup(auth, provider);
-            navigate('../Home.jsx');
+            navigate('/Home');
         }
         catch (err) {
             console.log("ERROR WITH GOOGLE REGISTER")
@@ -38,7 +39,11 @@ function Register() {
 
     return (
         <div className = "flex h-screen">
-            <div className = "w-3/7 flex items-center justify-center bg-white flex-col">
+            {/* Left side of the page, the actual login portion */}
+            <div 
+                className = "w-3/7 flex items-center justify-center bg-white flex-col"
+                style = {{ width: '45%' }}
+            >
                 <h1 className = "font-[PlayfairDisplay] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center mb-4 sm:mb-6 md:mb-8">Welcome To [Some Website Name]</h1>
                 <form onSubmit = {handleSignUp} className = "w-2/3 flex flex-col items-center gap-5">
                     <input
@@ -57,14 +62,25 @@ function Register() {
                     <button type = "submit" className = "w-full bg-[#019cb9] text-white p-3 rounded hover:bg-[#017d96] transition">
                         Sign Up
                     </button>
-                    <p>or</p>
+                    <div className="w-full flex items-center my-4">
+                        <hr className="flex-grow border-t border-gray-400" />
+                        <span className="mx-4 text-gray-500">OR</span>
+                        <hr className="flex-grow border-t border-gray-400" />
+                    </div>
                     <button onClick = {handleGoogleSignUp} className = "w-full flex gap-2 bg-[#019cb9] text-white p-3 rounded hover:bg-[#017d96] transition items-center justify-center">
                         <FaGoogle className = "w-5 h-5" />
                         Sign Up With Google
                     </button>
+                    <span className = "text-gray-600">Already have an account? {' '}
+                        <Link to = "/Login" className = "text-[#017d96] underline">Log In</Link>
+                    </span>
                 </form>
             </div>
-            <div className = "w-4/7 relative overflow-hidden">
+            {/* Right side of the page, img */}
+            <div 
+                className = "relative overflow-hidden"
+                style = {{ width: '55%' }}
+            >
                 <img
                     src = {PaintBanner}
                     alt="Decorative"
