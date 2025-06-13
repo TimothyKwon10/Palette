@@ -8,3 +8,15 @@
     font-weight: normal;
     font-style: normal;
   }
+
+@font-face {
+  font-family: 'Lato-Regular';
+  src: url('../assets/fonts/Lato/Lato-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  display: none;
+}

@@ -38,7 +38,7 @@ function Register() {
     }
 
     return (
-        <div className = "flex h-screen">
+        <div className = "flex h-screen font-[Lato-Regular]">
             {/* Left side of the page, the actual login portion */}
             <div 
                 className = "w-3/7 flex items-center justify-center bg-white flex-col"

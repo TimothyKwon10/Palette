@@ -38,7 +38,7 @@ function Login() {
     }
 
     return (
-        <div className = "flex h-screen">
+        <div className = "flex h-screen font-[Lato-Regular]">
             {/* Left side of the page, the actual login portion */}
             <div 
                 className = "relative overflow-hidden"
