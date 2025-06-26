@@ -20,3 +20,16 @@ input[type="search"]::-webkit-search-cancel-button {
   -webkit-appearance: none;
   display: none;
 }
+
+.my-masonry-grid {
+  display: flex;
+  margin-left: -16px; 
+  width: auto;
+}
+.my-masonry-grid_column {
+  padding-left: 16px;
+  background-clip: padding-box;
+}
+.my-masonry-grid_column > img {
+  margin-bottom: 16px;
+}

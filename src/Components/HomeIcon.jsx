@@ -31,7 +31,7 @@ function HomeIcon() {
                 <img
                     src = {homeIcon}
                     alt = "Home"
-                    className="absolute inset-0 object-cover transition-opacity duration-200 opacity-100 group-hover:opacity-0 group-hover:scale-110 transition-transform duration-200 group-hover:scale-110"
+                    className = "absolute inset-0 object-cover transition-opacity duration-200 opacity-100 group-hover:opacity-0 group-hover:scale-110 transition-transform duration-200 group-hover:scale-110"
                 />
                 <img
                     src = {homeIcon1}

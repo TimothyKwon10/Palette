@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider} from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useState } from "react";
 import { auth } from '../../FireBase/firebase';
 import { useNavigate } from 'react-router-dom'
@@ -13,7 +13,7 @@ function Login() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const provider = new GoogleAuthProvider();
-
+    
     const handleLogin = async (e) => {
         e.preventDefault();
         try {

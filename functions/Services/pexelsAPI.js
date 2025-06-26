@@ -1,9 +1,9 @@
+require("dotenv").config();
 const functions = require("firebase-functions");
 const fetch = require("node-fetch");
-const admin = require("firebase-admin");
-admin.initializeApp();
+const admin = require("./firebaseAdmin");
 
-exports.pexelsDBPopulation = functions.https.onRequest(async (req, res) => {
+exports.PexelsDBPopulation = functions.https.onRequest(async (req, res) => {
     const secret = req.query.secret;
     const expectedSecret = "Rock-1234";
   
@@ -11,7 +11,7 @@ exports.pexelsDBPopulation = functions.https.onRequest(async (req, res) => {
       return res.status(403).send("Forbidden: Invalid secret key.");
     }
 
-    const PEXELS_API_KEY = "P6PDNpGXTVVnoNL5jVxaxvdW5XkI83qYqdjh8ltcKNnJOiznQzWCo9pE";
+    const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
     const db = admin.firestore();
     const categoryFieldsPrimary = ["nature", "poses", "portraiture"];
     const categoryFieldsSecondary = ["fashion", "graphic design", "cyberpunk", "candid photography", "retro", "home decor", "food"];

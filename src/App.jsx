@@ -4,17 +4,36 @@ import Login from './Components/Authentication/Login';
 import Home from './Components/Pages/Home';
 import Collections from './Components/Pages/Collections'
 import Create from "./Components/Pages/Create"
+import AuthStatus from './Components/Hooks/AuthStatus';
 
 function App() {
 
+  const {loggedIn, checkingStatus } = AuthStatus();
+  if (checkingStatus) {
+    return <h1>Loading...</h1>;
+  }
+
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/Login" replace />} />
-      <Route path="/Home" element = {<Home />} />
-      <Route path="/Register" element = {<Register />} />
-      <Route path="/Login" element = {<Login />} />
-      <Route path = "/Collections" element = {<Collections />}/>
-      <Route path = "/Create" element = {<Create />}/>
+      <Route path="/" element={
+        loggedIn ? <Navigate to = "/Home" replace/> : <Navigate to = "/Login" replace/>
+        } />
+
+      <Route path="/Home" element = {<Home/>} />
+
+      <Route path="/Register" element = {
+        loggedIn ? <Navigate to = "/Home" replace/> : <Register/>
+      } />
+      <Route path="/Login" element = {
+        loggedIn ? <Navigate to = "/Home" replace/> : <Login/>
+      } />
+
+      <Route path="/Collections" 
+        element={loggedIn ? <Collections /> : <Navigate to="/Login" replace />} 
+      />
+      <Route path="/Create" 
+        element={loggedIn ? <Create /> : <Navigate to="/Login" replace />} 
+      />
     </Routes>
   )
 }

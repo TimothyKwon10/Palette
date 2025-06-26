@@ -1,10 +1,11 @@
 import { signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { auth } from '../../FireBase/firebase';
+import { db, auth } from '../../FireBase/firebase';
 import { useNavigate } from 'react-router-dom'
 import PaintBanner from '../../assets/images/PaintBanner.jpg';
 import { FaGoogle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore'
 
 function Register() {
     //use states for different fields and page state 
@@ -17,7 +18,10 @@ function Register() {
     const handleSignUp = async (e) => {
         e.preventDefault();
         try {
-            await createUserWithEmailAndPassword(auth, email, password);
+            const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredentials.user;
+
+            createUserInFireStore(user);
             navigate('/Home');
         }
         catch (err) {
@@ -29,12 +33,25 @@ function Register() {
     const handleGoogleSignUp = async (e) => {
         e.preventDefault();
         try {
-            await signInWithPopup(auth, provider);
+            const userCredentials = await signInWithPopup(auth, provider);
+            const user = userCredentials.user;
+
+            createUserInFireStore(user);
             navigate('/Home');
         }
         catch (err) {
             console.log("ERROR WITH GOOGLE REGISTER")
         }
+    }
+
+    const createUserInFireStore = async (user) => {
+        const userRef = doc(db, "users", user.uid);
+        await setDoc(userRef, {
+            email: user.email,
+            createdAt: serverTimestamp(),
+            preferences: [],
+            firstTime: true,  //mark as first-time user
+        });
     }
 
     return (
