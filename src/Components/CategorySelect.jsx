@@ -1,5 +1,9 @@
 import CategoryCards from "./CategoryCards";
 import { useState } from "react";
+import { auth, db } from '../FireBase/firebase';
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { useNavigate } from 'react-router-dom';
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import Add from '../assets/images/add.png';
 import Cross from '../assets/images/cross.png';
@@ -21,6 +25,7 @@ import GraphicDesignImg from '../assets/images/categories/Graphic_Design.jpg';
 
 function CategorySelect() {
     const [selectedCategories, setSelectedCategories] = useState([]);
+    const nav = useNavigate();
 
     const handleCategoryClick = (categoryName) => {
         // check if it's already selected
@@ -43,15 +48,41 @@ function CategorySelect() {
 
         if (trimmedInput !== "" && !addedCategories.includes(trimmedInput)) {
             setAddedCategories([...addedCategories, trimmedInput]);
-            setSelectedCategories([...addedCategories, trimmedInput])
+            setSelectedCategories([...selectedCategories, trimmedInput])
             setSearchInput("");
             console.log(trimmedInput + " added!")
         }
     }
 
+    //handle removing new categories
     const handleCategoryRemoval = (categoryName) => {
         setAddedCategories(addedCategories.filter(item => item !== categoryName));
         setSelectedCategories(selectedCategories.filter(item => item !== categoryName));
+    }
+
+    //After selecting interested categories, handle pressing the done button
+    const handleDone = async () => {
+        try {
+            const userRef = doc(db, "users", auth.currentUser.uid);
+            await updateDoc(userRef, { firstTime: false,
+                preferences: arrayUnion(...selectedCategories)
+             });
+    
+            const functions = getFunctions();
+            const categoryBucket = httpsCallable(functions, 'CategoryBucketHandler');
+
+            console.log("Sending:", { categories: selectedCategories });
+            const result = await categoryBucket({ categories: selectedCategories });
+            
+            console.log("Result:", result);
+            console.log('Server response:', result.data);
+
+            nav("/");
+        }
+        catch (err) {
+            console.error('Error handling Done:', err);
+            alert('Something went wrong while generating category buckets.');
+        }
     }
 
     //list of predetermined categories new users can choose from
@@ -88,7 +119,7 @@ function CategorySelect() {
                     </div>
                     <div className = "pr-8">
                         {selectedCategories.length < 5 ? <p className = "py-2 px-4 rounded-full bg-zinc-200 cursor-default">Pick {5 - selectedCategories.length} more</p> 
-                        : <button className = "py-2 px-4 rounded-full bg-[#019cb9] text-white font-black transition transform hover:scale-[1.07] duration-200 ease-in-out shadow-md">Done!</button>}
+                        : <button onClick = {() => handleDone()} className = "py-2 px-4 rounded-full bg-[#019cb9] text-white font-black transition transform hover:scale-[1.07] duration-200 ease-in-out shadow-md">Done!</button>}
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 mb-[24px] md:grid-cols-3 gap-6"> {/* cards go here */}
@@ -102,26 +133,26 @@ function CategorySelect() {
                         />
                     ))}
                 </div>
-                <div className = "flex">
+                <div className = "flex flex-wrap gap-x-3">
                    {/* added bubble categories go here */}
                    {addedCategories.map(category =>
-                        (<div key = {category} className = "flex content-center">
+                        (<div key = {category} className = "mb-3 px-2 py-1 flex gap-x-1.5 items-center rounded-full bg-gray-100">
                             <span>{category}</span>
-                            <button onClick = {() => handleCategoryRemoval(category)}>
-                                <img src = {Cross} className="h-5 w-5"/>
+                            <button onClick = {() => handleCategoryRemoval(category)} className = "hover:bg-gray-300 rounded-full transition duration-100 ease-in-out">
+                                <img src = {Cross} className = "h-5 w-5"/>
                             </button>
                         </div>
                     ))}
                 </div>
-                
+
                 {/* form to add ones own categories */}
                 <form className = "flex gap-3" onSubmit = {handleCategoryAddition}>
                     <input type = "text" placeholder = "Don't see your interest? Add it here..."
-                    className = "w-full px-3 py-2 basis-[92%] bg-gray-100 rounded-md"
+                    className = "placeholder:text-gray-500 w-full px-3 py-2 basis-[93%] bg-gray-100 rounded-full border border-gray-300 focus:shadow-md focus:outline-none transition-shadow duration-200 ease-in-out"
                     value={searchInput}
                     onChange = {(e) => setSearchInput(e.target.value)}
                     />
-                    <button type = "submit" className = "basis-[8%] bg-blue-100 flex items-center justify-center rounded-md">
+                    <button type = "submit" className = "basis-[7%] bg-[#fa5902] flex items-center justify-center rounded-full shadow-md transform hover:scale-[1.05] duration-200 ease-in-out">
                         <img src = {Add} className="h-5 w-5"/>
                     </button>
                 </form>

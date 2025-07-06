@@ -35,12 +35,6 @@ function Home() {
         checkFirstTime();
     }, [])
 
-    const handleClosePopup = async () => {
-        const userRef = doc(db, "users", auth.currentUser.uid);
-        await updateDoc(userRef, { firstTime: false });
-        setFirstTime(false);
-    }
-
     if (loading || checkingStatus) {
         return (
             <h1>Loading...</h1>
