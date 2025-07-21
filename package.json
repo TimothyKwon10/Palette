@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "node sendImages.js",
+    "start": "node tagImages.js",
     "build": "echo 'no build needed'"
   },
   "dependencies": {
