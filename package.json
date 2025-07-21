@@ -4,16 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "start": "node sendImages.js",
+    "build": "echo 'no build needed'"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "axios": "^1.10.0",
+    "dotenv": "^17.2.0",
     "firebase": "^11.9.0",
     "graphql-request": "^7.2.0",
+    "node-cron": "^4.2.1",
     "node-fetch": "^2.7.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
