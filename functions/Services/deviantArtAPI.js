@@ -86,7 +86,9 @@ exports.DeviantArtPopulation = functions.https.onRequest(async (req, res) => {
                     if (tagHit) continue;
 
                     await db.collection("generalImages").add({
+                        id: `deviantart_${image.deviationid}`,
                         url: imageUrl,
+                        tags: [],
                         title: image.title || "",
                         category: category, 
                         artist: image.author?.username || "Unknown",

@@ -21,6 +21,10 @@ dist-ssr/
 .env.*
 functions/.env
 
+# Firebase service account key
+functions/serviceAccountKey.json
+scraper/serviceAccountKey.json
+
 # Firebase
 .firebase/
 .firebaserc

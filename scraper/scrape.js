@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
-const db = require("./firebaseAdmin");
+const { db, admin } = require("./firebaseAdmin");
+const crypto = require('crypto');
 
 async function artStationScrape(search) {
     const browser = await puppeteer.launch({
@@ -42,12 +43,23 @@ async function artStationScrape(search) {
 
     await browser.close();
     for (const image of images) {
+        const id = generateId('artstation', image.src);
+
         await db.collection("generalImages").add({
+            id: id,
             url: image.src,
+            tags: [],
             title: image.alt,
-            category: search
+            category: search,
+            source: "artStation",
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
             });
     }
+}
+
+function generateId(source, url) {
+    const hash = crypto.createHash('sha256').update(url).digest('hex');
+    return `${source}_${hash}`;
 }
 
 const searchTerm = process.argv[2];

@@ -29,7 +29,9 @@ exports.PexelsDBPopulation = functions.https.onRequest(async (req, res) => {
 
         for (const photo of photos) {
             await db.collection("generalImages").add({ //fields for each image_item in the db
+                id: `pexels_${photo.id}`,
                 url: photo.src.large,
+                tags: [],
                 category: category,
                 photographer: photo.photographer,
                 photographer_url: photo.photographer_url,

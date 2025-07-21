@@ -62,7 +62,7 @@ exports.CategoryBucketHandler = onCall(async (request) => {
             }
         }
         else if (typeof categories === 'string') {
-            console.log("WAHTE THE FUCK");
+            console.log("WAHTE THE HECK");
         }
         else {
             console.log("im quitting cs");

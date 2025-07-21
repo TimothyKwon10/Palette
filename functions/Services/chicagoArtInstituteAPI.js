@@ -67,7 +67,9 @@ exports.ChicagoArtInstitutePopulation = functions.https.onRequest(async (req, re
                 }
 
                 await db.collection("generalImages").add({
+                    id: `CAI_${image.id}`,
                     url: imageUrl,
+                    tags: [],
                     title: image.title || "Untitled",
                     category: category,
                     artist: image.artist_display || "Unknown",
