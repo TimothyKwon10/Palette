@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "node tagImages.js",
+    "start": "node functions/Services/ImageTagging/tagImages.js",
     "build": "echo 'no build needed'"
   },
   "dependencies": {

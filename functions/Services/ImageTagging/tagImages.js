@@ -49,7 +49,7 @@ async function loopTagImages(intervalMinutes = 30) {
           const images = await fetchUntaggedImages();
           if (images.length > 0) {
             //images require tagging 
-            tagImages();
+            await tagImages();
           } 
           else {
             //all images are tagged already
