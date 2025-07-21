@@ -21,7 +21,7 @@ async function fetchUntaggedImages(limit = 200) {
     return images
 }
 
-async function sendImages() {
+async function tagImages() {
     const images = await fetchUntaggedImages();
 
     await startPod();
@@ -43,4 +43,26 @@ async function sendImages() {
     await stopPod();
 }
 
-sendImages();
+async function loopTagImages(intervalMinutes = 30) {
+    while (true) {
+        try {
+          const images = await fetchUntaggedImages();
+          if (images.length > 0) {
+            //images require tagging 
+            tagImages();
+          } 
+          else {
+            //all images are tagged already
+            console.log("No untagged images");
+          }
+    
+          //wait for next increment in 30 minutes to start tagger 
+          await new Promise(resolve => setTimeout(resolve, intervalMinutes * 60 * 1000));
+        } 
+        catch (err) {
+          console.error("Error in loop:", err);
+        }
+    }
+}
+
+loopTagImages();
