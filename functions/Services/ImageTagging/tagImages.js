@@ -6,6 +6,8 @@ const admin = require("../firebaseAdmin");
 
 const db = admin.firestore();
 
+console.log("🚀 tagImages.js script has started");
+
 async function fetchUntaggedImages(limit = 200) {
     const snapshot = await db
     .collection("generalImages")
