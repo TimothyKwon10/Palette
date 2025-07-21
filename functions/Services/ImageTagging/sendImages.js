@@ -1,5 +1,5 @@
-require("dotenv").config();
-const axios = require('axios');
+import dotenv from "dotenv";
+import axios from 'axios';
 
 const RUNPOD_API_ID = process.env.RUNPOD_POD_ID;
 

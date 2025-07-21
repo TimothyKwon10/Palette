@@ -1,8 +1,8 @@
-const startPod = require("./runPodAPI");
-const stopPod = require("./stopPodAPI");
-const fetchTags = require("./sendImages");
-const waitForModelReady = require("./waitForModelReady")
-const admin = require("../firebaseAdmin");
+import startPod from "./runPodAPI";
+import stopPod from "./stopPodAPI";
+import fetchTags from "./sendImages";
+import waitForModelReady from "./waitForModelReady";
+import admin from "../firebaseAdmin";
 
 const db = admin.firestore();
 
