@@ -21,14 +21,7 @@ async function fetchUntaggedImages(limit = 200) {
     return images
 }
 
-async function tagImages() {
-    const images = await fetchUntaggedImages();
-
-    if (images.length === 0) {
-        console.log("No untagged images found. Exiting.");
-        return;
-    }
-
+async function tagImages(images) {
     await startPod();
     const ready = await waitForModelReady();
     if (ready) {
@@ -48,9 +41,17 @@ async function tagImages() {
     await stopPod();
 }
 
-tagImages()
-  .then(() => process.exit(0))
-  .catch(err => {
-    console.error("Tagging failed:", err);
-    process.exit(1);
-  });
+fetchUntaggedImages()
+    .then(async (images) => {
+        if (images.length === 0) {
+            console.log("No untagged images found. Exiting.");
+            process.exit(0);
+        }
+
+        await tagImages(images);
+        process.exit(0);
+    })
+    .catch((err) => {
+        console.error("Tagging failed:", err);
+        process.exit(1);
+    });
