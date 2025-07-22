@@ -43,7 +43,7 @@ async function tagImages(images) {
 
 fetchUntaggedImages()
     .then(async (images) => {
-        console.log("image length: " + images.length)
+        console.log("image length: " + images.length + " " + JSON.stringify(images, null, 2))
         if (images.length === 0) {
             console.log("No untagged images found. Exiting.");
             process.exit(0);
