@@ -21,4 +21,4 @@ async function fetchTags(images) {
     }
 }
 
-module.exports = fetchTags;
+export default fetchTags;

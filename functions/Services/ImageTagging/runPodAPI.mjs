@@ -31,4 +31,4 @@ const startPod = async () => {
   }
 };
 
-module.exports = startPod;
+export default startPod;

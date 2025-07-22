@@ -26,4 +26,4 @@ async function waitForModelReady(maxWaitMs = 120000, intervalMs = 3000) {
     throw new Error("Timed out waiting for RAM++ to boot up");
 }
 
-module.exports = waitForModelReady;
+export default waitForModelReady;

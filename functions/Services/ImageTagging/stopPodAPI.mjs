@@ -31,4 +31,4 @@ const stopPod = async () => {
   }
 };
 
-module.exports = stopPod;
+export default stopPod;
