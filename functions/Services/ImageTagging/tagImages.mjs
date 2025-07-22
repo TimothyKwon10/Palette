@@ -2,7 +2,7 @@ import startPod from "./runPodAPI.mjs";
 import stopPod from "./stopPodAPI.mjs";
 import fetchTags from "./sendImages.mjs";
 import waitForModelReady from "./waitForModelReady.mjs";
-import admin from "../firebaseAdmin";
+import admin from "../firebaseAdmin.mjs";
 
 const db = admin.firestore();
 
