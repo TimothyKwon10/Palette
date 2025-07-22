@@ -1,7 +1,7 @@
-require("dotenv").config();
-const functions = require("firebase-functions");
-const fetch = require("node-fetch");
-const admin = require("./firebaseAdmin");
+import dotenv from "dotenv";
+import functions from "firebase-functions";
+import fetch from "node-fetch";
+import admin from "./firebaseAdmin.mjs";
 
 exports.ChicagoArtInstitutePopulation = functions.https.onRequest(async (req, res) => {
     const secret = req.query.secret;

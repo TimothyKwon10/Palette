@@ -1,7 +1,7 @@
-require("dotenv").config();
-const { onCall, HttpsError  } = require("firebase-functions/v2/https");
-const fetch = require("node-fetch");
-const admin = require("./firebaseAdmin");
+import dotenv from "dotenv";
+import { onCall, HttpsError  } from "firebase-functions/v2/https";
+import fetch from "node-fetch";
+import admin from "./firebaseAdmin.mjs";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
