@@ -20,8 +20,6 @@ const checkGpuAvailability = async () => {
       pod(podId: $podId) {
         id
         gpuCount
-        desiredStatus
-        status
       }
     }
   `;
