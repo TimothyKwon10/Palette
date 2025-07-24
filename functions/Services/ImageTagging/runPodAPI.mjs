@@ -69,13 +69,8 @@ const resumePod = async () => {
 };
 
 const startPod = async () => {
-  const available = await checkGpuAvailability();
-  if (!available) {
-    console.log("No GPUs available — skipping pod start.");
-    return false;
-  }
-
-  return await resumePod();
+  await resumePod();
+  return await checkGpuAvailability();
 };
 
 export default startPod;

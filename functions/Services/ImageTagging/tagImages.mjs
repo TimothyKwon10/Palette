@@ -26,6 +26,8 @@ async function tagImages(images) {
     const podStatus = await startPod();
     //no gpus available to my pod
     if (!podStatus) {
+        console.log("Stopping pod as there are no GPUs available at this time");
+        await stopPod();
         return;
     }
     
