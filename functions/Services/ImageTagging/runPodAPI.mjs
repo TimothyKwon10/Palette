@@ -38,7 +38,7 @@ const checkGpuAvailability = async () => {
       throw new Error("Pod not found");
     }
 
-    return pod.gpuCount > 0;
+    return pod.runtime.gpus.length > 0
   } 
   catch (err) {
     console.error("Failed to fetch pod info:", err);
