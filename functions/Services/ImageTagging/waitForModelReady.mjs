@@ -23,7 +23,8 @@ async function waitForModelReady(maxWaitMs = 120000, intervalMs = 3000) {
         await new Promise(resolve => setTimeout(resolve, intervalMs));
     }
 
-    throw new Error("Timed out waiting for RAM++ and CLIP to boot up");
+    console.log("Timed out waiting for RAM++ and CLIP to boot up");
+    return false
 }
 
 export default waitForModelReady;
