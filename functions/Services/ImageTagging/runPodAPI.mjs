@@ -19,7 +19,14 @@ const checkGpuAvailability = async () => {
     query Pod($podId: String!) {
       pod(podId: $podId) {
         id
-        gpuCount
+        name
+        runtime {
+          gpus {
+            id
+            gpuUtilPercent
+            memoryUtilPercent 
+          }
+        }
       }
     }
   `;
