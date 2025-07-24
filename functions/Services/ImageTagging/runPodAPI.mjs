@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { request, gql } from "graphql-request";
+import waitForModelReady from "./waitForModelReady.mjs";
 
 const RUNPOD_API_KEY = process.env.RUNPOD_API_KEY;
 const RUNPOD_POD_ID = process.env.RUNPOD_POD_ID;
@@ -70,7 +71,14 @@ const resumePod = async () => {
 
 const startPod = async () => {
   await resumePod();
-  return await checkGpuAvailability();
+  const ready = await waitForModelReady();
+  if (ready) {
+    return await checkGpuAvailability();
+  }
+  else {
+    //model never booted up
+    return false;
+  }
 };
 
 export default startPod;

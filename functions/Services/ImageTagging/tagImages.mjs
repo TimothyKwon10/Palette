@@ -24,30 +24,25 @@ async function fetchUntaggedImages(limit = 200) {
 
 async function tagImages(images) {
     const podStatus = await startPod();
+
     //no gpus available to my pod
     if (!podStatus) {
-        console.log("Stopping pod as there are no GPUs available at this time");
+        console.log("Stopping pod as there are no GPUs available at this time or the model crashed");
         await stopPod();
         return;
     }
-    
-    const ready = await waitForModelReady();
-    if (ready) {
-        const imageData = await fetchTags(images);
-        const imageTagsRAMPP = imageData.ram_results;
-        const imageVectorsCLIP = imageData.clip_results;
 
-        //send the tags back to the db 
-        for (const tagObj of imageTagsRAMPP) {
-            const vectorObj = imageVectorsCLIP.find(v => v.id === tagObj.id);
-            await db.collection("generalImages").doc(tagObj.id).update({
-                tags: tagObj.tags,
-                image_vector: vectorObj.image_vector
-            });
-        }
-    }
-    else {
-        console.log("RAM++ never booted up");
+    const imageData = await fetchTags(images);
+    const imageTagsRAMPP = imageData.ram_results;
+    const imageVectorsCLIP = imageData.clip_results;
+
+    //send the tags back to the db 
+    for (const tagObj of imageTagsRAMPP) {
+        const vectorObj = imageVectorsCLIP.find(v => v.id === tagObj.id);
+        await db.collection("generalImages").doc(tagObj.id).update({
+            tags: tagObj.tags,
+            image_vector: vectorObj.image_vector
+        });
     }
 
     await stopPod();
