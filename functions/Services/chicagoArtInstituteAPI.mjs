@@ -3,7 +3,7 @@ import functions from "firebase-functions";
 import fetch from "node-fetch";
 import admin from "./firebaseAdmin.mjs";
 
-exports.ChicagoArtInstitutePopulation = functions.https.onRequest(async (req, res) => {
+export const ChicagoArtInstitutePopulation = functions.https.onRequest(async (req, res) => {
     const secret = req.query.secret;
     const expectedSecret = "Rock-1234";
 
@@ -70,6 +70,7 @@ exports.ChicagoArtInstitutePopulation = functions.https.onRequest(async (req, re
                     id: `CAI_${image.id}`,
                     url: imageUrl,
                     tags: [],
+                    image_vector: [],
                     title: image.title || "Untitled",
                     category: category,
                     artist: image.artist_display || "Unknown",

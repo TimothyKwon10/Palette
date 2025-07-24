@@ -9,7 +9,8 @@ const db = admin.firestore();
 async function fetchUntaggedImages(limit = 200) {
     const snapshot = await db
     .collection("generalImages")
-    .where("tags", "==", []) 
+    .where("tags", "==", [])
+    .where("image_vector", "==", [])
     .limit(limit)
     .get();
 
@@ -22,17 +23,26 @@ async function fetchUntaggedImages(limit = 200) {
 }
 
 async function tagImages(images) {
-    await startPod();
+    const podStatus = await startPod();
+    //no gpus available to my pod
+    if (!podStatus) {
+        return;
+    }
+    
     const ready = await waitForModelReady();
     if (ready) {
-        const taggedImages = await fetchTags(images);
+        const imageData = await fetchTags(images);
+        const imageTagsRAMPP = imageData.ram_results;
+        const imageVectorsCLIP = imageData.clip_results;
 
         //send the tags back to the db 
-        taggedImages.forEach(async ({id, tags}) => {
-            await db.collection("generalImages").doc(id).update({
-                tags: tags
-            })
-        })
+        for (const tagObj of imageTagsRAMPP) {
+            const vectorObj = imageVectorsCLIP.find(v => v.id === tagObj.id);
+            await db.collection("generalImages").doc(tagObj.id).update({
+                tags: tagObj.tags,
+                image_vector: vectorObj.image_vector
+            });
+        }
     }
     else {
         console.log("RAM++ never booted up");
@@ -43,9 +53,8 @@ async function tagImages(images) {
 
 fetchUntaggedImages()
     .then(async (images) => {
-        console.log("image length: " + images.length + " " + JSON.stringify(images, null, 2))
         if (images.length === 0) {
-            console.log("No untagged images found. Exiting.");
+            console.log("No untagged / unvectorized images found. Exiting.");
             process.exit(0);
         }
 

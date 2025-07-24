@@ -3,7 +3,7 @@ import functions from "firebase-functions";
 import fetch from "node-fetch";
 import admin from "./firebaseAdmin.mjs";
 
-exports.DeviantArtPopulation = functions.https.onRequest(async (req, res) => {
+export const DeviantArtPopulation = functions.https.onRequest(async (req, res) => {
     const secret = req.query.secret;
     const expectedSecret = "Rock-1234";
   
@@ -89,6 +89,7 @@ exports.DeviantArtPopulation = functions.https.onRequest(async (req, res) => {
                         id: `deviantart_${image.deviationid}`,
                         url: imageUrl,
                         tags: [],
+                        image_vector: [],
                         title: image.title || "",
                         category: category, 
                         artist: image.author?.username || "Unknown",

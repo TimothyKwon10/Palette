@@ -11,7 +11,7 @@ async function waitForModelReady(maxWaitMs = 120000, intervalMs = 3000) {
             const response = await axios.get(`https://${RUNPOD_API_ID}-8000.proxy.runpod.net/healthz`)
 
             if (response.data.ready === true) {
-                console.log("RAM++ IS READY TO ROCK AND ROLL");
+                console.log("RAM++ AND CLIP ARE READY TO ROCK AND ROLL");
                 return true;
             }
         }
@@ -19,11 +19,11 @@ async function waitForModelReady(maxWaitMs = 120000, intervalMs = 3000) {
             //FreeAPI has not booted up yet and RAM++ is not yet started
         }
 
-        console.log("Waiting for RAM++ to boot up...")
+        console.log("Waiting for RAM++ and CLIP to ready up...")
         await new Promise(resolve => setTimeout(resolve, intervalMs));
     }
 
-    throw new Error("Timed out waiting for RAM++ to boot up");
+    throw new Error("Timed out waiting for RAM++ and CLIP to boot up");
 }
 
 export default waitForModelReady;

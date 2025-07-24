@@ -3,7 +3,7 @@ import functions from "firebase-functions";
 import fetch from "node-fetch";
 import admin from "./firebaseAdmin.mjs";
 
-exports.PexelsDBPopulation = functions.https.onRequest(async (req, res) => {
+export const PexelsDBPopulation = functions.https.onRequest(async (req, res) => {
     const secret = req.query.secret;
     const expectedSecret = "Rock-1234";
   
@@ -32,6 +32,7 @@ exports.PexelsDBPopulation = functions.https.onRequest(async (req, res) => {
                 id: `pexels_${photo.id}`,
                 url: photo.src.large,
                 tags: [],
+                image_vector: [],
                 category: category,
                 photographer: photo.photographer,
                 photographer_url: photo.photographer_url,

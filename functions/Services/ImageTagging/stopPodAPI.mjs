@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+dotenv.config();
 import { request, gql } from "graphql-request";
 
 const RUNPOD_API_KEY = process.env.RUNPOD_API_KEY;

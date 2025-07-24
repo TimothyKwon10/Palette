@@ -29,7 +29,7 @@ ${categories.map((category, index) =>
     return prompt;
 };
 
-exports.CategoryBucketHandler = onCall(async (request) => {
+export const CategoryBucketHandler = onCall(async (request) => {
         console.log("Incoming data object:", request);
         const { categories } = request.data;
 
