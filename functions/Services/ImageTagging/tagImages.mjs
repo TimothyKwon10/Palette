@@ -23,7 +23,7 @@ async function fetchUntaggedImages(limit = 200) {
 }
 
 async function tagImages(images) {
-    await resumePod();
+    await startPod();
     
     const ready = await waitForModelReady();
     if (ready) {

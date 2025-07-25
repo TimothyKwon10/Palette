@@ -15,7 +15,7 @@ const variables = {
   podId: RUNPOD_POD_ID,
 };
 
-const resumePod = async () => {
+const startPod = async () => {
   const query = gql`
     mutation ResumePod($podId: String!) {
       podResume(input: { podId: $podId }) {
@@ -28,13 +28,11 @@ const resumePod = async () => {
   try {
     const data = await request(ENDPOINT, query, variables, headers);
       console.log("Pod resume request sent:", data);
-      return true;
 
   } 
   catch (err) {
     console.error("Failed to start pod:", err);
-    return false;
   }
 };
 
-export default resumePod;
+export default startPod;
