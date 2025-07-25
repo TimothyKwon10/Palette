@@ -15,38 +15,6 @@ const variables = {
   podId: RUNPOD_POD_ID,
 };
 
-const checkGpuAvailability = async () => {
-  const query = gql`
-    query Pod($podId: String!) {
-      pod(podId: $podId) {
-        id
-        name
-        runtime {
-          gpus {
-            id
-            gpuUtilPercent
-            memoryUtilPercent 
-          }
-        }
-      }
-    }
-  `;
-
-  try {
-    const data = await request(ENDPOINT, query, variables, headers);
-    const pod = data.pod;
-    if (!pod) {
-      throw new Error("Pod not found");
-    }
-
-    return pod.runtime.gpus.length > 0
-  } 
-  catch (err) {
-    console.error("Failed to fetch pod info:", err);
-    return false;
-  }
-};
-
 const resumePod = async () => {
   const query = gql`
     mutation ResumePod($podId: String!) {
@@ -69,16 +37,4 @@ const resumePod = async () => {
   }
 };
 
-const startPod = async () => {
-  await resumePod();
-  const ready = await waitForModelReady();
-  if (ready) {
-    return await checkGpuAvailability();
-  }
-  else {
-    //model never booted up
-    return false;
-  }
-};
-
-export default startPod;
+export default resumePod;
