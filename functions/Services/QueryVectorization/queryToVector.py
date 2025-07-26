@@ -15,9 +15,9 @@ if "FIREBASE_SERVICE_ACCOUNT_JSON" in os.environ:
     # Railway production mode
     service_account_info = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT_JSON"])
     cred = credentials.Certificate(service_account_info)
-else:
-    # Local development
-    cred = credentials.Certificate("../../serviceAccountKey.json")
+# else:
+#     # Local development
+#     cred = credentials.Certificate("../../serviceAccountKey.json")
 
 firebase_admin.initialize_app(cred)
 db = firestore.client()
