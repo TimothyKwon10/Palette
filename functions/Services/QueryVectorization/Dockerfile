@@ -10,9 +10,9 @@ RUN apt-get update && apt-get install -y curl && apt-get clean
 COPY . .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r ./vectorization_requirements.txt
 
-# Expose the port
+# Expose the portx
 EXPOSE 8000
 
 # Start FastAPI app
