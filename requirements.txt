@@ -4,7 +4,4 @@ torch
 open_clip_torch
 Pillow
 numpy
-python-multipart
-requests
-scikit-learn
 firebase-admin

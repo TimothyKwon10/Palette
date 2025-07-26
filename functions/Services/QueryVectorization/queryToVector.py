@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from open_clip import create_model_and_transforms, get_tokenizer
-from sklearn.preprocessing import normalize
 from pydantic import BaseModel
 import torch
 import torch.nn.functional as F
@@ -23,6 +22,10 @@ else:
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
+def l2_normalize(arr: np.ndarray) -> np.ndarray:
+    norms = np.linalg.norm(arr, axis=1, keepdims=True)
+    return arr / np.where(norms == 0, 1, norms)
+
 #Store vector data in RAM for quick cosine similarity comparisons
 image_vector_cache = {
     "ids": [],
@@ -39,7 +42,7 @@ def collect_image_vectors():
     ids, embeddings = zip(*vectors)
 
     #create a normalized matrix (all unit vectors) for image vectors 
-    matrix = normalize(np.array(embeddings), norm='l2')
+    matrix = l2_normalize(np.array(embeddings))
 
     image_vector_cache["ids"] = list(ids)
     image_vector_cache["embeddings"] = embeddings
