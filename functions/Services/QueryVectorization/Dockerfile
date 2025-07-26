@@ -16,4 +16,4 @@ RUN pip install --no-cache-dir -r ./vectorization_requirements.txt
 EXPOSE 8000
 
 # Start FastAPI app
-CMD ["uvicorn", "functions.Services.QueryVectorization.queryToVector:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "queryToVector:app", "--host", "0.0.0.0", "--port", "8000"]
