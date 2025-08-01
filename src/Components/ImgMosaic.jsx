@@ -3,21 +3,24 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../FireBase/firebase.js';
 import Masonry from 'react-masonry-css';
 
-function ImgMosaic() {
+function ImgMosaic({ images: propImages }) {
     const [images, setImages] = useState([]);
 
     //On load, run useEffect once to retrieve the images from the db 
     useEffect(() => {
-        const fetchImages = async() => {
-            const snapshot = await getDocs(collection(db, "generalImages")) //retrieves a snapshot of all the documents from generalImages db
-            const imgUrls = snapshot.docs.map(doc => doc.data().url); //retrieve and store only the urls
+        if (!propImages) {
+            const fetchImages = async() => {
+                const snapshot = await getDocs(collection(db, "generalImages")) //retrieves a snapshot of all the documents from generalImages db
+                const imgUrls = snapshot.docs.map(doc => doc.data().url); //retrieve and store only the urls
 
-            setImages(imgUrls);
-        };
+                setImages(imgUrls);
+            };
+        
+            fetchImages();
+        }
+    }, [propImages]);
 
-        fetchImages();
-    }, []);
-
+    const displayedImages = propImages || images;
 
     const breakpointColumnsObj = {
         default: 4,
@@ -33,7 +36,7 @@ function ImgMosaic() {
                 className="my-masonry-grid"
                 columnClassName="my-masonry-grid_column"
             >
-                {images.map((url, index) => ( //create image card for each of the different urls 
+                {displayedImages.map((url, index) => ( //create image card for each of the different urls 
                     <img
                         key = {index}
                         src = {url}

@@ -4,6 +4,7 @@ import Login from './Components/Authentication/Login';
 import Home from './Components/Pages/Home';
 import Collections from './Components/Pages/Collections'
 import Create from "./Components/Pages/Create"
+import Search from './Components/Pages/Search';
 import AuthStatus from './Components/Hooks/AuthStatus';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
       <Route path="/Create" 
         element={loggedIn ? <Create /> : <Navigate to="/Login" replace />} 
       />
+      <Route path="/Search" element = {<Search/>}/>
     </Routes>
   )
 }

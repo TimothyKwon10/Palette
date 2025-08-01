@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware 
+
 from open_clip import create_model_and_transforms, get_tokenizer
 from pydantic import BaseModel
 import torch
@@ -10,6 +12,14 @@ import os
 import json
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if "FIREBASE_SERVICE_ACCOUNT_JSON" in os.environ:
     # Railway production mode

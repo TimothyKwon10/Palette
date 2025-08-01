@@ -1,9 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function SearchBar() {
   const [searchText, setSearchText] = useState("");
+  const navigate = useNavigate();
 
   const clearSearch = () => setSearchText("");
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && searchText.trim() !== "") {
+      const encodedQuery = encodeURIComponent(searchText.trim());
+      navigate(`/search?q=${encodedQuery}`);
+    }
+  };
 
   return (
     <div className="relative w-full max-w-xl">
@@ -13,6 +22,7 @@ function SearchBar() {
         onChange={(e) => setSearchText(e.target.value)}
         placeholder="SEARCH"
         className="w-full pl-10 pr-10 py-2 bg-[#e8e7e5] rounded focus:outline-none focus:ring-2 focus:ring-zinc-400"
+        onKeyDown = {handleKeyDown}
       />
 
         {/* Search icon (left) */}
