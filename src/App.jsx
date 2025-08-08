@@ -28,7 +28,6 @@ function App() {
       <Route path="/Login" element = {
         loggedIn ? <Navigate to = "/Home" replace/> : <Login/>
       } />
-
       <Route path="/Collections" 
         element={loggedIn ? <Collections /> : <Navigate to="/Login" replace />} 
       />

@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchImgUrlsFromQuery } from "../fetchImgUrlsFromQuery.mjs";
+import { fetchImgUrlsFromQuery } from "../../../functions/Services/fetchImgUrlsFromQuery.mjs";
 import Header from "../Header.jsx";
 import ImgMosaic from "../ImgMosaic.jsx";
 
@@ -15,13 +15,25 @@ function Search() {
         const q = params.get("q");
         if (q) {
             setQuery(q);
-            setResults(fetchImgUrlsFromQuery(query));
+
+            const getImageUrls = async () => {
+                try {
+                    const urls = await fetchImgUrlsFromQuery(q);
+                    setResults(urls);
+                } 
+                catch (err) {
+                    console.error("Fetch failed:", err);
+                }
+              };
+          
+            getImageUrls();
         }
-      }, [location]);
+      }, [location.search]);
 
     return (
         <div className = "px-6">
             <Header/>
+            <div className="mb-6"></div>
             <ImgMosaic images = {results}/>
         </div>
     )

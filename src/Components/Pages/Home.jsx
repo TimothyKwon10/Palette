@@ -45,6 +45,7 @@ function Home() {
         return (
             <div className = "px-6">
                 <Header/>
+                <div className="mb-6"></div>
                 <ImgMosaic/>
             </div>
         )

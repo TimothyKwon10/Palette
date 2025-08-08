@@ -26,7 +26,7 @@ function Header() {
     const isRegister = location.pathname === "/Register";
 
     return (
-        <div className="flex w-full items-center justify-between py-6 px-6 font-[Lato-Regular] border-b border-zinc-300 mb-6 sticky top-0 bg-white z-50">
+        <div className="flex w-full items-center justify-between py-6 px-6 font-[Lato-Regular] border-b border-zinc-300 sticky top-0 bg-white z-50">
             <div className="flex gap-8 text-zinc-500">
                 <button>[Some Website Name]</button>
                 <HomeIcon />

@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // You (admin) — full access to everything
+    match /{document=**} {
+      allow read, write: if request.auth != null &&
+                         request.auth.uid == "YOUR_UID_HERE";
+    }
+
+    // generalImages — visible to all (including guests)
+    //     - guests: can read
+    //     - logged-in users: can read & add
+    //     - only you: can update/delete
+    match /generalImages/{imageId} {
+      allow read: if true;
+
+      allow create: if request.auth != null;
+
+      allow update, delete: if request.auth != null &&
+                            request.auth.uid == "YOUR_UID_HERE";
+    }
+
+    // users — each user can read/write only their own document
+    match /users/{userId} {
+      allow read, write: if request.auth != null &&
+                         request.auth.uid == userId;
+    }
+  }
+}
+

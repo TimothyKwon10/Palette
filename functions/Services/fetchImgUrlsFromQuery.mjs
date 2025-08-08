@@ -1,5 +1,5 @@
-import { getDoc } from 'firebase/firestore';
-import { db } from '../FireBase/firebase.js';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../src/FireBase/firebase.js';
 
 export async function fetchImgUrlsFromQuery(query) {
     const response = await fetch("https://vectorsearch-production-d8b5.up.railway.app/vectorizeAndCompare", {

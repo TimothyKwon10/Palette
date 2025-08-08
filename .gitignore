@@ -39,3 +39,6 @@ scraper/serviceAccountKey.json
 *.njsproj
 *.sln
 *.sw?
+
+# Delete the db of images
+functions/deleteGeneralImages.mjs
