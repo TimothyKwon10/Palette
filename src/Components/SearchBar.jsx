@@ -12,7 +12,7 @@ function SearchBar() {
       const encodedQuery = encodeURIComponent(searchText.trim());
       navigate(`/search?q=${encodedQuery}`);
     }
-  };
+  };  
 
   return (
     <div className="relative w-full max-w-xl">
@@ -21,7 +21,7 @@ function SearchBar() {
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         placeholder="SEARCH"
-        className="w-full pl-10 pr-10 py-2 bg-[#e8e7e5] rounded focus:outline-none focus:ring-2 focus:ring-zinc-400"
+        className="w-full pl-10 pr-10 py-2 rounded border border-1 border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#026C7B] focus:border-none"
         onKeyDown = {handleKeyDown}
       />
 

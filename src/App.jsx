@@ -5,7 +5,9 @@ import Home from './Components/Pages/Home';
 import Collections from './Components/Pages/Collections'
 import Create from "./Components/Pages/Create"
 import Search from './Components/Pages/Search';
+import Finalize from './Components/Pages/Finalize'
 import AuthStatus from './Components/Hooks/AuthStatus';
+import RequireUpload from './Components/requireUpload';
 
 function App() {
 
@@ -21,7 +23,6 @@ function App() {
         } />
 
       <Route path="/Home" element = {<Home/>} />
-
       <Route path="/Register" element = {
         loggedIn ? <Navigate to = "/Home" replace/> : <Register/>
       } />
@@ -34,6 +35,9 @@ function App() {
       <Route path="/Create" 
         element={loggedIn ? <Create /> : <Navigate to="/Login" replace />} 
       />
+      <Route element={loggedIn ? <RequireUpload /> : <Navigate to="/login" replace />}>
+        <Route path="/create/finalize" element={<Finalize />} />
+      </Route>
       <Route path="/Search" element = {<Search/>}/>
     </Routes>
   )

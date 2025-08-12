@@ -6,6 +6,7 @@ import PaintBanner from '../../assets/images/PaintBanner.jpg';
 import { FaGoogle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { setDoc, doc, serverTimestamp } from 'firebase/firestore'
+import Logo from "../../assets/images/IconOnly_NoBuffer.png"
 
 function Register() {
     //use states for different fields and page state 
@@ -61,7 +62,8 @@ function Register() {
                 className = "w-3/7 flex items-center justify-center bg-white flex-col"
                 style = {{ width: '45%' }}
             >
-                <h1 className = "font-[PlayfairDisplay] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center mb-4 sm:mb-6 md:mb-8">Welcome To [Some Website Name]</h1>
+                <img src = {Logo} className = "h-14 md:h-16 lg:h-20 w-auto mb-3 sm:mb-4 md:mb-5"></img>
+                <h1 className = "font-[PlayfairDisplay] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center mb-4 sm:mb-6 md:mb-8">Welcome To Palette</h1>
                 <form onSubmit = {handleSignUp} className = "w-2/3 flex flex-col items-center gap-5">
                     <input
                         type = "email"

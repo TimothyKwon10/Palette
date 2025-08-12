@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import PaintBanner from '../../assets/images/PaintBanner.jpg';
 import { FaGoogle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import Logo from "../../assets/images/IconOnly_NoBuffer.png"
 
 function Login() {
     //use states for different fields and page state 
@@ -39,7 +40,7 @@ function Login() {
 
     return (
         <div className = "flex h-screen font-[Lato-Regular]">
-            {/* Left side of the page, the actual login portion */}
+            {/* Left side of the page, img */}
             <div 
                 className = "relative overflow-hidden"
                 style = {{ width: '55%' }}
@@ -51,11 +52,12 @@ function Login() {
                     style={{ clipPath: 'ellipse(100% 120% at 0% 50%)' }}
                 />
             </div>
-            {/* Right side of the page, img */}
+            {/* Right side of the page, the actual login portion */}
             <div 
                 className = "flex items-center justify-center bg-white flex-col"
                 style = {{ width: '45%' }}
             >
+                <img src = {Logo} className = "h-14 md:h-16 lg:h-20 w-auto mb-3 sm:mb-4 md:mb-5"></img>
                 <h1 className = "font-[PlayfairDisplay] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center mb-4 sm:mb-6 md:mb-8">Welcome Back</h1>
                 <form onSubmit = {handleLogin} className = "w-2/3 flex flex-col items-center gap-5">
                     <input

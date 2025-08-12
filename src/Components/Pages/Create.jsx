@@ -1,15 +1,25 @@
 import Header from "../Header.jsx";
 import Upload from "../../assets/images/upload.png";
-import uploadAndStore from "../../../functions/Services/UploadImages/processUserUpload.mjs"
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 
-function DropUpload({ onFileUpload}) {
+function DropUpload() {
+    const navigate = useNavigate();
+    const storage = getStorage();
+
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: { 'image/*': [] },
         multiple: false,
-        onDropAccepted: (acceptedFiles) => {
+        onDropAccepted: async (acceptedFiles) => {
             const file = acceptedFiles[0];
-            uploadAndStore(file);
+                
+            const storageRef = ref(storage, `uploads/${file.name}`);
+            await uploadBytes(storageRef, file);
+            const URL = await getDownloadURL(storageRef);
+            
+            sessionStorage.setItem("uploadPreviewURL", URL);
+            navigate("/Create/Finalize")
         },
         onDropRejected: (fileRejections) => {
             console.log("The file upload was unsuccessful", fileRejections);

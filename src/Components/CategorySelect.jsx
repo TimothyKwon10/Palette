@@ -114,12 +114,12 @@ function CategorySelect() {
             <div className="bg-white pb-8 pr-8 pl-8 rounded shadow-lg w-5/6 overflow-y-auto max-h-[75vh]">
                 <div className = "flex flex-col gap-3 items-center md:flex-row md:items-center md:justify-between sticky top-0 z-50 bg-white pt-6 pb-2 mb-2 -mx-8">
                     <div className = "pl-8">
-                        <h1 className="text-3xl font-bold mb-2">Welcome to [some website name]!</h1>
+                        <h1 className="text-4xl font-[PlayfairDisplay] mb-2">Welcome to Palette</h1>
                         <h3 className = "text-xl mb-5">Select 5 categories to get started: </h3>
                     </div>
                     <div className = "pr-8">
-                        {selectedCategories.length < 5 ? <p className = "py-2 px-4 rounded-full bg-zinc-200 cursor-default">Pick {5 - selectedCategories.length} more</p> 
-                        : <button onClick = {() => handleDone()} className = "py-2 px-4 rounded-full bg-[#019cb9] text-white font-black transition transform hover:scale-[1.07] duration-200 ease-in-out shadow-md">Done!</button>}
+                        {selectedCategories.length < 5 ? <p className = "py-2 px-4 rounded bg-zinc-200 cursor-default">Pick {5 - selectedCategories.length} more</p> 
+                        : <button onClick = {() => handleDone()} className = "py-2 px-4 rounded bg-[#019cb9] text-white font-black hover:bg-[#017d96] transition">Done!</button>}
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 mb-[24px] md:grid-cols-3 gap-6"> {/* cards go here */}
@@ -148,11 +148,11 @@ function CategorySelect() {
                 {/* form to add ones own categories */}
                 <form className = "flex gap-3" onSubmit = {handleCategoryAddition}>
                     <input type = "text" placeholder = "Don't see your interest? Add it here..."
-                    className = "placeholder:text-gray-500 w-full px-3 py-2 basis-[93%] bg-gray-100 rounded-full border border-gray-300 focus:shadow-md focus:outline-none transition-shadow duration-200 ease-in-out"
+                    className = "placeholder:text-gray-500 w-full px-3 py-2 basis-[93%] border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#fa5902]"
                     value={searchInput}
                     onChange = {(e) => setSearchInput(e.target.value)}
                     />
-                    <button type = "submit" className = "basis-[7%] bg-[#fa5902] flex items-center justify-center rounded-full shadow-md transform hover:scale-[1.05] duration-200 ease-in-out">
+                    <button type = "submit" className = "basis-[7%] bg-[#fa5902] flex items-center justify-center rounded hover:bg-[#d94e02] transition">
                         <img src = {Add} className="h-5 w-5"/>
                     </button>
                 </form>
