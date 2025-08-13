@@ -56,7 +56,7 @@ function Finalize() {
                         <div className="w-full max-w-[560px] bg-gray-100 rounded-2xl
                                         flex items-center justify-center p-2">
                             <img
-                            src={localStorage.getItem("uploadPreviewURL")}
+                            src={sessionStorage.getItem("uploadPreviewURL")}
                             alt="Upload Preview"
                             className="w-auto max-w-full h-auto object-contain rounded-2xl"
                             />

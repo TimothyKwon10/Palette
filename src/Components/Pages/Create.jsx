@@ -19,7 +19,7 @@ function DropUpload() {
             const URL = await getDownloadURL(storageRef);
             
             sessionStorage.setItem("uploadPreviewURL", URL);
-            navigate("/Create/Finalize")
+            navigate("/Create/Finalize");
         },
         onDropRejected: (fileRejections) => {
             console.log("The file upload was unsuccessful", fileRejections);

@@ -9,7 +9,6 @@ const db = admin.firestore();
 async function fetchUntaggedImages(limit = 200) {
     const snapshot = await db
     .collection("generalImages")
-    .where("tags", "==", [])
     .where("image_vector", "==", [])
     .limit(limit)
     .get();
