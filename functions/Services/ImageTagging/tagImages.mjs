@@ -6,7 +6,7 @@ import admin from "../firebaseAdmin.mjs";
 
 const db = admin.firestore();
 
-async function fetchUntaggedImages(limit = 200) {
+async function fetchUntaggedImages(limit = 150) {
     const snapshot = await db
     .collection("generalImages")
     .where("image_vector", "==", [])

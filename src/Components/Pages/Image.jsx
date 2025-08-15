@@ -31,19 +31,40 @@ function Image() {
 
             <main className="mx-auto max-w-6xl px-4">
             {/* ONE shared card */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-[#ECEEF1]">
                 <div className="grid grid-cols-1 lg:grid-cols-12">
                     {/* LEFT: action bar */}
-                    <div className = "flex lg:flex-col lg:items-center lg:col-span-1 lg:border-r lg:border-b-0 lg:border-gray-200 sm:border-b sm:border-gray-200 px-4 py-6 gap-6">
-                        <button>
-                            <img src = {Heart} className = "h-6 w-auto"/>
-                        </button>
-                        <button>
-                            <img src = {Expand} className = "h-6 w-auto"/>
-                        </button>
-                        <button className = "bg-[#019cb9] py-2 px-3 rounded text-white">
-                            Save
-                        </button>
+                    <div
+                        className="
+                            flex justify-between p-4
+                            border-b border-[#ECEEF1]
+                            lg:flex-col lg:items-center lg:col-span-1 lg:px-4 lg:py-6
+                            lg:border-r lg:border-b-0
+                        "
+                    >
+                        <div className = "flex lg:flex-col gap-6 items-center">
+                            <button>
+                                <img src = {Heart} className = "h-6 w-auto"/>
+                            </button>
+                            <button>
+                                <img src = {Expand} className = "h-6 w-auto"/>
+                            </button>
+                            <button className = "bg-[#019cb9] py-2 px-3 rounded text-white">
+                                Save
+                            </button>
+                        </div>
+                        <div className = "flex lg:flex-col gap-3 items-center">
+                            {(image.colors || []).map((hex) => (
+                                <button
+                                    key={hex}
+                                    title={hex}
+                                    aria-label={`Copy ${hex}`}
+                                    onClick={() => navigator.clipboard?.writeText(hex)}
+                                    className="h-8 w-8 rounded-full"
+                                    style={{ backgroundColor: hex }}
+                                />
+                            ))}
+                        </div>
                     </div>
 
                     {/* MIDDLE: image */}
@@ -59,7 +80,7 @@ function Image() {
                     </section>
 
                     {/* RIGHT: sidebar */}
-                    <aside className="lg:col-span-4 bg-gray-100">
+                    <aside className="lg:col-span-4 bg-[#ECEEF1]">
                         <div className="p-6 lg:sticky lg:top-24">
                         <h1 className="text-xl font-[PlayfairDisplay] font-semibold mb-3">
                             {image.title || "Untitled"}
