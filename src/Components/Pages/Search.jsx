@@ -19,6 +19,7 @@ function Search() {
             const getImageUrls = async () => {
                 try {
                     const urls = await fetchImgUrlsFromQuery(q);
+                    console.log(urls);
                     setResults(urls);
                 } 
                 catch (err) {

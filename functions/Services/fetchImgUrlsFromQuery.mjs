@@ -14,7 +14,12 @@ export async function fetchImgUrlsFromQuery(query) {
     const urls = await Promise.all(
         matches.map(async (match) => {
           const snap = await getDoc(doc(db, "generalImages", match.id));
-          return snap.exists() ? snap.data().url : null;
+          if (!snap.exists()) return null;
+
+          const { url } = snap.data() || {};
+          if (!url) return null;
+
+          return { id: match.id, url };
         })
       );
     
