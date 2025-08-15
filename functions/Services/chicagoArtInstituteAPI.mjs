@@ -70,6 +70,7 @@ export const ChicagoArtInstitutePopulation = functions.https.onRequest(async (re
                     id: `CAI_${image.id}`,
                     url: imageUrl,
                     tags: [],
+                    colors: [],
                     image_vector: [],
                     title: image.title || "Untitled",
                     category: category,

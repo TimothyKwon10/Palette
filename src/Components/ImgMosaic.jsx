@@ -2,6 +2,7 @@ import { useState, useEffect} from "react";
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../FireBase/firebase.js';
 import Masonry from 'react-masonry-css';
+import { useNavigate } from "react-router-dom";
 
 function ImgMosaic({ images: propImages }) {
     const [images, setImages] = useState([]);
@@ -11,9 +12,12 @@ function ImgMosaic({ images: propImages }) {
         if (!propImages) {
             const fetchImages = async() => {
                 const snapshot = await getDocs(collection(db, "generalImages")) //retrieves a snapshot of all the documents from generalImages db
-                const imgUrls = snapshot.docs.map(doc => doc.data().url); //retrieve and store only the urls
+                const imgs = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    url: doc.data().url
+                })); //retrieve and store only the urls
 
-                setImages(imgUrls);
+                setImages(imgs);
             };
         
             fetchImages();
@@ -29,6 +33,8 @@ function ImgMosaic({ images: propImages }) {
         500: 1
     };
 
+    const navigate = useNavigate();
+
     return (
         <div>
             <Masonry
@@ -36,13 +42,17 @@ function ImgMosaic({ images: propImages }) {
                 className="my-masonry-grid"
                 columnClassName="my-masonry-grid_column"
             >
-                {displayedImages.map((url, index) => ( //create image card for each of the different urls 
-                    <img
-                        key = {index}
-                        src = {url}
-                        loading = "lazy"
-                        className = "rounded-lg w-full"
-                    />
+                {displayedImages.map((img) => ( //create image card for each of the different urls 
+                    <button
+                        key={img.id}
+                        onClick={() => navigate(`/image/${img.id}`)}
+                    >
+                        <img
+                            src = {img.url}
+                            loading = "lazy"
+                            className = "rounded-lg w-full"
+                        />
+                    </button>
                 ))}
             </Masonry>
         </div>

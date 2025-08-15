@@ -32,6 +32,7 @@ export const PexelsDBPopulation = functions.https.onRequest(async (req, res) => 
                 id: `pexels_${photo.id}`,
                 url: photo.src.large,
                 tags: [],
+                colors: [],
                 image_vector: [],
                 category: category,
                 photographer: photo.photographer,

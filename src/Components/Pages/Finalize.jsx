@@ -34,7 +34,8 @@ function Finalize() {
             artist: "N/A",
             tags: tags || [],
             description: description || "",
-            image_vector: []
+            image_vector: [],
+            colors: []
         })
             console.log("Successfully added to DB");
         }

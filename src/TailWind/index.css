@@ -30,6 +30,6 @@ input[type="search"]::-webkit-search-cancel-button {
   padding-left: 16px;
   background-clip: padding-box;
 }
-.my-masonry-grid_column > img {
+.my-masonry-grid_column > * {
   margin-bottom: 16px;
 }

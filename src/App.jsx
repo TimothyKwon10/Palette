@@ -8,6 +8,7 @@ import Search from './Components/Pages/Search';
 import Finalize from './Components/Pages/Finalize'
 import AuthStatus from './Components/Hooks/AuthStatus';
 import RequireUpload from './Components/requireUpload';
+import Image from './Components/Pages/Image'
 
 function App() {
 
@@ -38,6 +39,7 @@ function App() {
       <Route element={loggedIn ? <RequireUpload /> : <Navigate to="/login" replace />}>
         <Route path="/create/finalize" element={<Finalize />} />
       </Route>
+      <Route path="/Image/:id" element={<Image/>}/>
       <Route path="/Search" element = {<Search/>}/>
     </Routes>
   )

@@ -51,6 +51,7 @@ async function artStationScrape(search) {
             id: id,
             url: image.src,
             tags: [],
+            colors: [],
             image_vector: [],
             title: image.alt,
             category: search,

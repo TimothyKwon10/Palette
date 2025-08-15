@@ -5,10 +5,11 @@ import shutil
 import json
 sys.path.append("/workspace/dependencies/rampp")
 
+from pathlib import Path  
 from fastapi import FastAPI
 from ram.models import ram_plus
 from pydantic import BaseModel
-from utils import download_image, run_ram_plus, run_clip
+from utils import download_image, run_ram_plus, run_clip, rgb_to_hex, extract_palette_from_file
 
 import open_clip
 import torch
@@ -63,6 +64,7 @@ def root(images: list[ImageData]):
     
     RamResults = []
     ClipResults = []
+    ColorSwatches = []
     
     for image in images:
         try:
@@ -76,19 +78,28 @@ def root(images: list[ImageData]):
             logger.info(f"Image Tags: {tags}")
             RamResults.append({"id": image.id, "tags": tag_list})
             ClipResults.append({"id": image.id, "image_vector": vectorized_image.tolist()})
+
+            #get image palettes
+            pal = extract_palette_from_file(local_path, 4, 4)
+            ColorSwatches.append({"id": image.id, "palette": pal["palette"]})
+            
             
         except Exception as e:
             logger.error(f"{e} SOMETHING MESSED UP")
-    
-    try:
-        shutil.rmtree("temp_images")
-        os.makedirs("temp_images")
-    except Exception as e:
-        logger.warning(f"Failed to clear temp_images folder: {e}")
+            
+        finally:
+            # remove the file immediately after processing this image
+            if local_path:
+                try:
+                    Path(local_path).unlink(missing_ok=True)
+                except Exception as e:
+                    logger.warning("Could not delete %s: %s", local_path, e)
 
     print("RAM Results:", json.dumps(RamResults, indent=2))
     print("CLIP Results:", json.dumps(ClipResults, indent=2))
+    
     return {
         "ram_results": RamResults,
-        "clip_results": ClipResults
+        "clip_results": ClipResults,
+        "palette_results": ColorSwatches
     }

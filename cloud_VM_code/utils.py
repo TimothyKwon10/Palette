@@ -5,6 +5,11 @@ import requests
 import os
 import sys
 sys.path.append("/workspace/dependencies/rampp")
+COLORTHIEF_PATH = "/workspace/dependencies"
+if os.path.isdir(COLORTHIEF_PATH) and COLORTHIEF_PATH not in sys.path:
+    sys.path.insert(0, COLORTHIEF_PATH)
+    
+from colorthief import ColorThief 
 
 def download_image(image_id: str, url: str, folder: str = "/workspace/temp_images") -> str:
     os.makedirs(folder, exist_ok=True)
@@ -41,3 +46,27 @@ def run_clip(local_path: str, model, preprocess) -> list[float]:
         vec /= vec.norm(dim=-1, keepdim=True)
         final_vector = vec[0].cpu().numpy()
     return final_vector
+
+def rgb_to_hex(rgb):
+    return "#{:02x}{:02x}{:02x}".format(*rgb)
+
+def extract_palette_from_file(path: str, k: int, quality: int) -> dict:
+    ct = ColorThief(path)
+    palette = ct.get_palette(color_count=k, quality=quality) or []
+    dominant = ct.get_color(quality=quality)
+
+    # hexify
+    palette_hex = [rgb_to_hex(c) for c in palette]
+    dominant_hex = rgb_to_hex(dominant)
+
+    # ensure no duplicates
+    if dominant_hex in palette_hex:
+        palette_hex = [dominant_hex] + [h for h in palette_hex if h != dominant_hex]
+    else:
+        palette_hex = [dominant_hex] + palette_hex
+    palette_hex = palette_hex[:k]
+
+    return {
+        "dominant": dominant_hex,
+        "palette": palette_hex
+    }

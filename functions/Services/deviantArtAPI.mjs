@@ -89,6 +89,7 @@ export const DeviantArtPopulation = functions.https.onRequest(async (req, res) =
                         id: `deviantart_${image.deviationid}`,
                         url: imageUrl,
                         tags: [],
+                        colors: [],
                         image_vector: [],
                         title: image.title || "",
                         category: category, 

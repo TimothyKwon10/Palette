@@ -29,13 +29,17 @@ async function tagImages(images) {
         const imageData = await fetchTags(images);
         const imageTagsRAMPP = imageData.ram_results;
         const imageVectorsCLIP = imageData.clip_results;
+        const imageColors = imageData.palette_results
 
         //send the tags back to the db 
         for (const tagObj of imageTagsRAMPP) {
             const vectorObj = imageVectorsCLIP.find(v => v.id === tagObj.id);
+            const colorObj = imageColors.find(v => v.id === tagObj.id)
+
             await db.collection("generalImages").doc(tagObj.id).update({
                 tags: tagObj.tags,
-                image_vector: vectorObj.image_vector
+                image_vector: vectorObj.image_vector,
+                colors: colorObj.palette
             });
         }
     }
