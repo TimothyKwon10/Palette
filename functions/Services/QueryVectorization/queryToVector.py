@@ -23,7 +23,7 @@ app.add_middleware(
 
 ADMIN_REFRESH_KEY = os.environ["ADMIN_REFRESH_KEY"]
 
-def require_service_key(authorization: str, None = Header(None)):
+def require_service_key(authorization: str = Header(None, alias="Authorization")):
     if authorization != f"Bearer {ADMIN_REFRESH_KEY}":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")
 
