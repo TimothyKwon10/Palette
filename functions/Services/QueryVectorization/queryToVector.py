@@ -124,8 +124,9 @@ def generateFeed(authorization: str = Header(None, alias = "Authorization")):
 
     for snap in db.collection("users").stream():
         uid = snap.id
+        data = snap.to_dict() 
         prefs = data.get("preferences")
         print (uid)
         print (prefs)
 
-    return{"Refreshed all feeds": True}
+    return {"Refreshed all feeds": True}
