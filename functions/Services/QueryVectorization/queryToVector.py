@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware 
 
 from open_clip import create_model_and_transforms, get_tokenizer
@@ -20,6 +20,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+ADMIN_REFRESH_KEY = os.environ["ADMIN_REFRESH_KEY"]
+
+def require_service_key(authorization: str, None = Header(None)):
+    if authorization != f"Bearer {ADMIN_REFRESH_KEY}":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")
 
 if "FIREBASE_SERVICE_ACCOUNT_JSON" in os.environ:
     # Railway production mode
@@ -93,4 +99,33 @@ def root(query: Query):
     results = [{"id": image_vector_cache["ids"][i], "score": float(similarities[i])} for i in top_indices]
 
     return {"matches": results}
-    
+
+@app.post("/admin/refresh-feeds")
+def generateFeed(authorization: str = Header(None, alias = "Authorization")):
+    require_service_key(authorization)
+
+    categoriesDict = {
+        "Digital Art": "High-quality digital artworks created on a computer, in a variety of styles.",
+        "Photography": "High-quality photographs capturing a subject, scene, or atmosphere.",
+        "Illustration": "A high-quality illustration or drawing with line, form, and color.",
+        "3D Art": "A high-quality 3D render or model.",
+        "Concept Art": "High-quality concept art exploring mood, setting, or design ideas.",
+        "Character Design": "High-quality artwork focused on designing a character.",
+        "Landscape": "A high-quality landscape scene of nature or environment.",
+        "Portraiture": "A high-quality portrait of a person or character.",
+        "Cooking": "High-quality food imagery related to cooking, dishes, ingredients, or finished meals.",
+        "Architecture": "High-quality images of architecture, buildings, or structures.",
+        "Anime": "High-quality anime-style artwork, characters, or settings.",
+        "Fashion": "High-quality fashion photos highlighting unique clothing and style.",
+        "Abstract": "High-quality abstract art emphasizing shapes, color, and texture.",
+        "Traditional Painting": "A high-quality traditional painting created with physical media.",
+        "Graphic Design": "High-quality graphic design featuring typography and layout."
+    }
+
+    for snap in db.collection("users").stream():
+        uid = snap.id
+        prefs = data.get("preferences")
+        print (uid)
+        print (prefs)
+
+    return{"Refreshed all feeds": True}

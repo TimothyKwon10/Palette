@@ -30,7 +30,7 @@ export const PexelsDBPopulation = functions.https.onRequest(async (req, res) => 
         for (const photo of photos) {
             await db.collection("generalImages").add({ //fields for each image_item in the db
                 id: `pexels_${photo.id}`,
-                url: photo.src.large,
+                url: photo.src.large2x,
                 tags: [],
                 colors: [],
                 image_vector: [],

@@ -54,6 +54,7 @@ fetchUntaggedImages()
     .then(async (images) => {
         if (images.length === 0) {
             console.log("No untagged / unvectorized images found. Exiting.");
+            await stopPod();
             process.exit(0);
         }
 
