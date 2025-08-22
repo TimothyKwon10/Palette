@@ -1,31 +1,42 @@
 import { useState, useEffect} from "react";
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
 import { db } from '../FireBase/firebase.js';
 import Masonry from 'react-masonry-css';
 import { useNavigate } from "react-router-dom";
-
+import useAuthUser from "./useAuthUser.jsx"
 
 function ImgMosaic({ images: propImages }) {
+    const { user, checking } = useAuthUser();
     const [images, setImages] = useState([]);
 
-    //On load, run useEffect once to retrieve the images from the db 
     useEffect(() => {
-        if (!propImages) {
-            const fetchImages = async() => {
-                const snapshot = await getDocs(collection(db, "generalImages")) //retrieves a snapshot of all the documents from generalImages db
-                const imgs = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    url: doc.data().url
-                })); //retrieve and store only the urls
+        const fetchImages = async () => {
+            if (propImages) {
+                setImages(propImages);
+                return;
+            }
+    
+            if (user) {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    const feed = userDoc.data().personal_feed || [];
+                    setImages(feed);
+                }
+            } 
 
+            else {
+                // fallback to general images collection if not logged in
+                const snapshot = await getDocs(collection(db, "generalImages"));
+                const imgs = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                url: doc.data().url,
+                }));
                 setImages(imgs);
-            };
-        
-            fetchImages();
-        }
-    }, [propImages]);
-
-    const displayedImages = propImages || images;
+            }
+        };
+    
+        fetchImages();
+      }, [user, propImages]);
 
     const breakpointColumnsObj = {
         default: 4,
@@ -36,6 +47,9 @@ function ImgMosaic({ images: propImages }) {
 
     const navigate = useNavigate();
 
+    if (checking) {
+        return <p>Loading auth...</p>; 
+    }
     return (
         <div>
             <Masonry
@@ -43,7 +57,7 @@ function ImgMosaic({ images: propImages }) {
                 className="my-masonry-grid"
                 columnClassName="my-masonry-grid_column"
             >
-                {displayedImages.map((img) => ( //create image card for each of the different urls 
+                {images.map((img) => ( //create image card for each of the different urls 
                     <button
                         key={img.id}
                         onClick={() => navigate(`/image/${img.id}`)}

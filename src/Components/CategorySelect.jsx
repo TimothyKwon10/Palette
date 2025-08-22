@@ -119,7 +119,7 @@ function CategorySelect() {
                     </div>
                     <div className = "pr-8">
                         {selectedCategories.length < 5 ? <p className = "py-2 px-4 rounded bg-zinc-200 cursor-default">Pick {5 - selectedCategories.length} more</p> 
-                        : <button onClick = {() => handleDone()} className = "py-2 px-4 rounded bg-[#019cb9] text-white font-black hover:bg-[#017d96] transition">Done!</button>}
+                        : <button onClick = {() => handleDone()} className = "py-2 px-4 rounded bg-[#019cb9] text-white font-black hover:bg-[#017d96] transition">Done</button>}
                     </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 mb-[24px] md:grid-cols-3 gap-6"> {/* cards go here */}

@@ -3,13 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from open_clip import create_model_and_transforms, get_tokenizer
 from pydantic import BaseModel
+from typing import List
 import torch
 import torch.nn.functional as F
 import numpy as np
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore 
 import os
 import json
+import requests
+import random
 
 app = FastAPI()
 
@@ -21,19 +24,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-ADMIN_REFRESH_KEY = os.environ["ADMIN_REFRESH_KEY"]
-
-def require_service_key(authorization: str = Header(None, alias="Authorization")):
-    if authorization != f"Bearer {ADMIN_REFRESH_KEY}":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")
-
 if "FIREBASE_SERVICE_ACCOUNT_JSON" in os.environ:
     # Railway production mode
     service_account_info = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT_JSON"])
     cred = credentials.Certificate(service_account_info)
-# else:
-#     # Local development
-#     cred = credentials.Certificate("../../serviceAccountKey.json")
+else:
+    # Local development
+    cred = credentials.Certificate("../../serviceAccountKey.json")
 
 firebase_admin.initialize_app(cred)
 db = firestore.client()
@@ -45,6 +42,7 @@ def l2_normalize(arr: np.ndarray) -> np.ndarray:
 #Store vector data in RAM for quick cosine similarity comparisons
 image_vector_cache = {
     "ids": [],
+    "urls": [],
     "embeddings": None,
     "matrix": None
 }
@@ -54,13 +52,14 @@ def collect_image_vectors():
         .where("image_vector", "!=", []) \
         .stream()
 
-    vectors = [(doc.id, doc.to_dict()["image_vector"]) for doc in snapshot]
-    ids, embeddings = zip(*vectors)
+    vectors = [(doc.id, doc.to_dict()["image_vector"], doc.to_dict().get("url")) for doc in snapshot]
+    ids, embeddings, urls = zip(*vectors)
 
     #create a normalized matrix (all unit vectors) for image vectors 
     matrix = l2_normalize(np.array(embeddings))
 
     image_vector_cache["ids"] = list(ids)
+    image_vector_cache["urls"] = list(urls)
     image_vector_cache["embeddings"] = embeddings
     image_vector_cache["matrix"] = matrix
 
@@ -100,9 +99,14 @@ def root(query: Query):
 
     return {"matches": results}
 
+
+class BatchQuery(BaseModel):
+    texts: List[str]
+
 @app.post("/admin/refresh-feeds")
 def generateFeed(authorization: str = Header(None, alias = "Authorization")):
     require_service_key(authorization)
+    url = "http://127.0.0.1:8000/vectorizeAndCompareBatch" #THIS NEEDS TO CHANGE FOR RAILWAY
 
     categoriesDict = {
         "Digital Art": "High-quality digital artworks created on a computer, in a variety of styles.",
@@ -124,9 +128,49 @@ def generateFeed(authorization: str = Header(None, alias = "Authorization")):
 
     for snap in db.collection("users").stream():
         uid = snap.id
-        data = snap.to_dict() 
-        prefs = data.get("preferences")
-        print (uid)
-        print (prefs)
+        data = snap.to_dict()
+        prefs = data.get("preferences") or []
 
-    return {"Refreshed all feeds": True}
+        queries = [categoriesDict.get(pref, pref) for pref in prefs]
+        batch_results = run_batch(queries)
+
+        db.collection("users").document(uid).set(
+            {"personal_feed": batch_results},
+            merge=True
+        )
+
+    return {"Refreshed Feed": True}
+
+ADMIN_REFRESH_KEY = os.environ["ADMIN_REFRESH_KEY"]
+
+def run_batch(texts: list[str]):
+    results = []
+    for text in texts:
+        tokens = tokenizer([text]).to(device)
+        with torch.no_grad():
+            text_features = model.encode_text(tokens)
+            text_features = F.normalize(text_features, dim=-1)
+
+        query_vector = text_features.squeeze().cpu().numpy().reshape(1, -1)
+        similarities = np.dot(image_vector_cache["matrix"], query_vector.T).flatten()
+        top_indices = similarities.argsort()[::-1][:20]
+
+        results.extend([
+            {"id": image_vector_cache["ids"][i], "url": image_vector_cache["urls"][i]}
+            for i in top_indices
+        ])
+
+    # de-dupe + shuffle
+    best = {}
+    for r in results:
+        if r["id"] not in best:
+            best[r["id"]] = r
+            
+    results = list(best.values())
+    random.shuffle(results)
+
+    return (results)
+
+def require_service_key(authorization: str = Header(None, alias="Authorization")):
+    if authorization != f"Bearer {ADMIN_REFRESH_KEY}":
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")

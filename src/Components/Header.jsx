@@ -3,12 +3,24 @@ import HomeIcon from "./HomeIcon.jsx";
 import SearchBar from "./SearchBar.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import AuthStatus from "./Hooks/AuthStatus.js";
+import { getAuth, signOut } from "firebase/auth";
 import Logo from "../assets/images/FullLogo_NoBuffer.jpg"
 
 function Header() {
     const { loggedIn, checkingStatus } = AuthStatus(); //Log in status check
     const navigate = useNavigate();
     const location = useLocation();
+
+    const auth = getAuth(); // TESTING MODE -----------------------------------------------------
+    const handleLogout = async () => {
+        try {
+          await signOut(auth);
+          console.log("User signed out successfully.");
+        } catch (error) {
+          console.error("Error signing out:", error);
+        }
+      };
+
 
     if (checkingStatus) { 
         return (
@@ -69,7 +81,7 @@ function Header() {
                             {isCollections && <div className="w-full h-0.5 bg-[#026C7B] mt-0.5 rounded-sm" />}
                         </div>
 
-                        <button>
+                        <button onClick = {handleLogout}>
                             <img
                                 src={userIcon}
                                 alt="Profile"

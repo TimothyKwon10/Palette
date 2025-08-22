@@ -1,10 +1,12 @@
-import { getFirestore, collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { getFirestore, collection, addDoc, serverTimestamp, arrayUnion, doc, updateDoc } from "firebase/firestore";
 import Header from "../Header.jsx";
 import { useState } from "react";
 import Add from '../../assets/images/add.png';
 import Cross from '../../assets/images/cross.png';
+import useAuthUser from "../useAuthUser.jsx"
 
 function Finalize() {
+    const { user, checking } = useAuthUser();
     const db = getFirestore();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -26,7 +28,8 @@ function Finalize() {
     const addToDB = async (e) => {
         e.preventDefault();
 
-        try {await addDoc(collection(db, "generalImages"), {
+        try {
+            const docRef = await addDoc(collection(db, "generalImages"), {
             url: sessionStorage.getItem("uploadPreviewURL"),
             uploadedAt: serverTimestamp(),
             source: "User",
@@ -37,7 +40,14 @@ function Finalize() {
             image_vector: [],
             colors: []
         })
-            console.log("Successfully added to DB");
+
+            const userRef = doc(db, "users", user.uid);
+            await updateDoc(userRef, {
+                user_uploads: arrayUnion({
+                    id: docRef.id,
+                    url: sessionStorage.getItem("uploadPreviewURL")
+                }),
+            });
         }
         catch (err) {
             console.log("error", err)

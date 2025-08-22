@@ -46,7 +46,7 @@ function DropUpload() {
                 alt = "Upload"
                 className = "w-8 h-8 object-cover m-2 animate-bounce"
             />
-            <h1 className = "text-xl font-bold">Show us what you've been working on!</h1>
+            <h1 className = "text-xl font-bold">Show us what you've been working on</h1>
             <h1 className="text-center">Drag or click to upload a file</h1>
         </div>
     )
