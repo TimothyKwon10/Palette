@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Register from './Components/Authentication/Register';
 import Login from './Components/Authentication/Login';
 import Home from './Components/Pages/Home';
-import Collections from './Components/Pages/Collections'
+import MyPalletes from './Components/Pages/MyPalettes'
 import Create from "./Components/Pages/Create"
 import Search from './Components/Pages/Search';
 import Finalize from './Components/Pages/Finalize'
@@ -30,8 +30,8 @@ function App() {
       <Route path="/Login" element = {
         loggedIn ? <Navigate to = "/Home" replace/> : <Login/>
       } />
-      <Route path="/Collections" 
-        element={loggedIn ? <Collections /> : <Navigate to="/Login" replace />} 
+      <Route path="/MyPalettes" 
+        element={loggedIn ? <MyPalletes /> : <Navigate to="/Login" replace />} 
       />
       <Route path="/Create" 
         element={loggedIn ? <Create /> : <Navigate to="/Login" replace />} 

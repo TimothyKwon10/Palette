@@ -90,7 +90,6 @@ export default function NewPaletteControl({ onCreate }) {
           {/* Tooltip styled like a rounded label, anchored to avoid cutoff */}
           <div
                 className="absolute left-1/2 -translate-x-1/2
-                top-full mt-0
                 top-auto bottom-full mb-1
                 px-2 py-1 rounded bg-[#ECEEF1] text-gray-500 text-xs
                 opacity-0 group-hover:opacity-100

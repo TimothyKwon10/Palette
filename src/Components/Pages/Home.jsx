@@ -2,7 +2,7 @@ import Header from "../Header.jsx"
 import ImgMosaic from "../ImgMosaic.jsx";
 import { useEffect, useState } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { auth, db } from '../../FireBase/firebase';
+import { auth, db } from '../../FireBase/firebaseConfig';
 import AuthStatus from '../Hooks/AuthStatus.js'
 import CategorySelect from "../CategorySelect.jsx"
 

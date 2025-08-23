@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
-import { db } from '../FireBase/firebase.js';
+import { db } from '../FireBase/firebaseConfig.js';
 import Masonry from 'react-masonry-css';
 import { useNavigate } from "react-router-dom";
 import useAuthUser from "./useAuthUser.jsx"

@@ -1,6 +1,6 @@
 import CategoryCards from "./CategoryCards";
 import { useState } from "react";
-import { auth, db } from '../FireBase/firebase';
+import { auth, db } from '../FireBase/firebaseConfig';
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
 import { getFunctions, httpsCallable } from "firebase/functions";

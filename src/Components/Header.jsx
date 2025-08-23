@@ -28,12 +28,12 @@ function Header() {
         );
     }
 
-    const goToCollections = () => navigate("/Collections");
+    const goToCollections = () => navigate("/MyPalettes");
     const goToCreate = () => navigate("/Create");
     const goToLogin = () => navigate("/Login");
     const goToRegister = () => navigate("/Register");
 
-    const isCollections = location.pathname === "/Collections";
+    const isPalettes = location.pathname === "/MyPalettes";
     const isCreate = location.pathname === "/Create";
     const isLogin = location.pathname === "/Login";
     const isRegister = location.pathname === "/Register";
@@ -78,7 +78,7 @@ function Header() {
                             >
                                 MY PALETTES
                             </button>
-                            {isCollections && <div className="w-full h-0.5 bg-[#026C7B] mt-0.5 rounded-sm" />}
+                            {isPalettes && <div className="w-full h-0.5 bg-[#026C7B] mt-0.5 rounded-sm" />}
                         </div>
 
                         <button onClick = {handleLogout}>

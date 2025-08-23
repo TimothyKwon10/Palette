@@ -1,6 +1,6 @@
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { useState } from "react";
-import { auth } from '../../FireBase/firebase';
+import { auth } from '../../FireBase/firebaseConfig';
 import { useNavigate } from 'react-router-dom'
 import PaintBanner from '../../assets/images/PaintBanner.jpg';
 import { FaGoogle } from 'react-icons/fa';

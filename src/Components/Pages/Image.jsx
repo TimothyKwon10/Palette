@@ -1,7 +1,7 @@
 import { doc, getDoc, setDoc, arrayUnion, updateDoc, arrayRemove, collection, 
-    addDoc, getDocs, query, where, limit, serverTimestamp,
+    addDoc, getDocs, serverTimestamp,
     increment, runTransaction} from "firebase/firestore";
-import { db } from "../../Firebase/firebase";
+import { db } from "../../FireBase/firebaseConfig.js";
 import useAuthUser from "../useAuthUser.jsx"
 import { useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -111,15 +111,30 @@ function Image() {
                 const itemRef = doc(db, "users", user.uid, "collections", cid, "items", id);
             
                 await runTransaction(db, async (tx) => {
-                    const itemSnap = await tx.get(itemRef);
+                    const [collSnap, itemSnap] = await Promise.all([
+                      tx.get(collDocRef),
+                      tx.get(itemRef),
+                    ]);
+                  
                     if (!itemSnap.exists()) {
-                    tx.set(itemRef, { url: image.url, id });
-                    tx.update(collDocRef, {
+                      tx.set(itemRef, {
+                        id,
+                        url: image.url,
+                        title: image.title ?? null,
+                        tags: image.tags ?? [],
+                        createdAt: serverTimestamp(),
+                      });
+                  
+                      const prev = (collSnap.data()?.preview || []).filter(p => p.id !== id);
+                      const preview = [{ id, url: image.url }, ...prev].slice(0, 3);
+                  
+                      tx.update(collDocRef, {
                         updatedAt: serverTimestamp(),
                         imageCount: increment(1),
-                        coverImageUrl: image.url,
-                        coverImageId: id
-                    });
+                        coverImageUrl: preview[0]?.url ?? image.url,
+                        coverImageId:  preview[0]?.id  ?? id,
+                        preview,
+                      });
                     }
                 });
             }));
@@ -154,36 +169,53 @@ function Image() {
         }
     }
 
-    const onLikeImage = async (id) => {
+    const onLikeImage = async (id, url) => {
         const userRef = doc(db, "users", user.uid);
         setHeart(true);
-
-        await setDoc(userRef, {
-            likedImages: arrayUnion(id)
-        }, { merge: true });
-    }
-
-    const onUnlikeImage = async (id) => {
+      
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(userRef);
+          const current = snap.exists() ? snap.data().likedImages || [] : [];
+      
+          // already liked
+          const exists = current.some((x) => x.id === id);
+          if (exists) return;
+      
+          const next = [...current, { id, url }];
+          if (snap.exists()) {
+            tx.update(userRef, { likedImages: next });
+          } else {
+            tx.set(userRef, { likedImages: next });
+          }
+        });
+      };
+      
+      const onUnlikeImage = async (id) => {
         const userRef = doc(db, "users", user.uid);
         setHeart(false);
       
-        await updateDoc(userRef, {
-            likedImages: arrayRemove(id)
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(userRef);
+          if (!snap.exists()) return;
+      
+          const current = snap.data().likedImages || [];
+          const next = current.filter((x) => x.id !== id);
+      
+          tx.update(userRef, { likedImages: next });
         });
-    };
-
-    const checkIfLiked = async (id) => {
+      };
+      
+      const checkIfLiked = async (id) => {
         const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-
-        if (userSnap.exists()) {
-            const likedImages = userSnap.data().likedImages || [];
-            const isLiked = likedImages.includes(id);
-            setHeart(isLiked);
-        } else {
-            setHeart(false);
-        }
-    }
+        const snap = await getDoc(userRef);
+      
+        if (!snap.exists()) return setHeart(false);
+      
+        const liked = snap.data().likedImages || [];
+        const isLiked = liked.some((x) => x.id === id);
+        setHeart(isLiked);
+      };
+  
 
     useEffect(() => {
         if (user?.uid && id) checkIfLiked(id);
@@ -380,7 +412,7 @@ function Image() {
                             >
                                 <div className = "flex lg:flex-col gap-6 items-center">
                                 <button
-                                    onClick={() => heart ? onUnlikeImage(id) : onLikeImage(id)}
+                                    onClick={() => heart ? onUnlikeImage(id) : onLikeImage(id, image.url)}
                                     className = "hover:scale-110 transition ease-in-out duration-200"
                                     >
                                     {heart
