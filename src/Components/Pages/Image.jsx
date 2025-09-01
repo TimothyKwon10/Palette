@@ -11,6 +11,7 @@ import HeartFilled from "../../assets/images/heart_filled.png"
 import Expand from "../../assets/images/expand.png"
 import WhiteCross from "../../assets/images/whiteCross.png"
 import Animation from "../animation.jsx"
+import toast from "react-hot-toast";
 
 function Image() {  
     const { user, checking } = useAuthUser();
@@ -165,6 +166,7 @@ function Image() {
         }
 
         finally {
+            toast.success("Image Saved");
             setIsSaving(false);
         }
     }
@@ -289,7 +291,7 @@ function Image() {
                             <div
                                 className="
                                     flex justify-between p-4
-                                    border-b border-[#ECEEF1]
+                                    border-b border-[CEEF1#E]
                                     lg:flex-col lg:items-center lg:col-span-1 lg:px-4 lg:py-6
                                     lg:border-r lg:border-b-0
                                 "

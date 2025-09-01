@@ -37,7 +37,9 @@ function Home() {
 
     if (loading || checkingStatus) {
         return (
-            <h1>Loading...</h1>
+            <div className="flex h-screen items-center justify-center">
+                <h2 className="text-gray-500">Loading...</h2>
+            </div>
         )
     }
 

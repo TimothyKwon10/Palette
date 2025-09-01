@@ -89,7 +89,7 @@ function MyPalettes() {
               <PalettePreview key = "User Upload" urls = {userUploadPalettes.slice(0, 3).map(x => x.url)} title = "Your uploads" variant = "user upload" onEmptyClick = {() => goCreate()}/>
               {genPalettes.map(col => {
                 const urls = (col.preview?.length ? col.preview : [{ url: col.coverImageUrl }]).map(x => x.url);
-                return <PalettePreview key={col.id} urls={urls} title={col.name} />;
+                return <PalettePreview key={col.id} urls={urls} title={col.name} id={col.id}/>;
               })}
             </div>
             ) : (

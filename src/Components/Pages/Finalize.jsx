@@ -4,15 +4,20 @@ import { useState } from "react";
 import Add from '../../assets/images/add.png';
 import Cross from '../../assets/images/cross.png';
 import useAuthUser from "../useAuthUser.jsx"
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 function Finalize() {
-    const { user, checking } = useAuthUser();
+    const { user } = useAuthUser();
     const db = getFirestore();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const navigate = useNavigate();
   
     const [tags, setTags] = useState([]);
     const [tagInput, setTagInput] = useState("");
+
+    const goHome = () => navigate("/");
 
     const addTag = () => {
     const t = tagInput.trim();
@@ -54,6 +59,8 @@ function Finalize() {
         }
 
         sessionStorage.removeItem("uploadPreviewURL");
+        toast.success("Image published");
+        goHome();
     }
 
     return (
@@ -91,13 +98,11 @@ function Finalize() {
                         className="w-full border border-gray-400 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#019cb9] min-h-[150px] overflow-y-auto resize-none"
                         onInput={(e) => {
                             e.target.style.height = "auto"; 
-                            e.target.style.height = `${e.target.scrollHeight}px`; // expand to fit content
+                            e.target.style.height = `${e.target.scrollHeight}px`; 
                         }}
                         />
 
                         <div className="w-full">
-
-                            {/* chips above the input */}
                             {tags.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mb-2">
                                 {tags.map((t, i) => (

@@ -15,7 +15,7 @@ function SearchBar() {
   };  
 
   return (
-    <div className="relative w-full max-w-xl">
+    <div className="relative w-full">
       <input
         type="search"
         value={searchText}

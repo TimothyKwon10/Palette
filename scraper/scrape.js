@@ -46,18 +46,18 @@ async function artStationScrape(search) {
     await browser.close();
     for (const image of validImages) {
         const id = generateId('artstation', image.src);
-
-        await db.collection("generalImages").add({
-            id: id,
-            url: image.src,
-            tags: [],
-            colors: [],
-            image_vector: [],
-            title: image.alt,
-            category: search,
-            source: "artStation",
-            createdAt: admin.firestore.FieldValue.serverTimestamp()
-            });
+      
+        await db.collection("generalImages").doc(id).set({
+          id: id,
+          url: image.src,
+          tags: [],
+          colors: [],
+          image_vector: [],
+          title: image.alt,
+          category: search,
+          source: "artStation",
+          createdAt: admin.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
     }
 }
 
