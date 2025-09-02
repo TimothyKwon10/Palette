@@ -51,6 +51,7 @@ async function artStationScrape(search) {
           id: id,
           url: image.src,
           tags: [],
+          artist: image.artist,
           colors: [],
           image_vector: [],
           title: image.alt,
@@ -71,14 +72,19 @@ async function scrapeImageFromPage(url, browser) {
     const artPage = await browser.newPage();
     try {
         await artPage.goto(url, { waitUntil: 'networkidle2' });
-        await artPage.waitForSelector('img.img-fit' || 'img.img-fluid', { timeout: 5000 }).catch(() => {});
+        await artPage.waitForSelector('img.img-fit' || 'img.img-fluid', { timeout: 9000 }).catch(() => {});
 
         const imageData = await artPage.evaluate(() => {
-            const img = document.querySelector('img.img-fit') || document.querySelector('img.img-fluid');
+            const img = document.querySelector('img.img-fit, img.img-fluid');
+            const a = document.querySelector(
+                '.project-author-name a:not(.pro-badge):not([href^="/subscribe"])'
+            );
+
             if (!img?.src) return null;
             return {
                 src: img?.src || null,
-                alt: img?.alt || null
+                alt: img?.alt || null,
+                artist: a?.textContent?.trim() || null
             };
         });
 

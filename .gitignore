@@ -39,6 +39,7 @@ scraper/serviceAccountKey.json
 *.njsproj
 *.sln
 *.sw?
+scraper/artstation.cookies.json
 
 # Delete the db of images
 functions/deleteGeneralImages.mjs

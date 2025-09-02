@@ -352,25 +352,33 @@ function Image() {
                             {/* RIGHT: sidebar */}
                             <aside className="lg:col-span-4 bg-[#ECEEF1]">
                                 <div className="p-6 lg:sticky lg:top-24">
-                                <h1 className="text-2xl font-[PlayfairDisplay] font-semibold mb-3">
-                                    {image.title || "Untitled"}
-                                </h1>
-        
-                                {/* tags */}
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {(image.tags || []).map((t) => (
-                                    <span key={t} className="text-xs px-2 py-1 rounded-full bg-[#019cb9] text-white">
-                                        # {t}
-                                    </span>
-                                    ))}
+                                    <h1 className="text-2xl font-[PlayfairDisplay] font-semibold mb-3">
+                                        {image.title || "Untitled"}
+                                    </h1>
+                                    <h3 className="flex gap-1 text-sm mb-4">
+                                        Artist:{" "}
+                                        {image.artist ? (
+                                            <p className = "text-[#019cb9] font-bold">{image.artist}</p>
+                                        ) : (
+                                            <p className = "text-gray-500">Unknown</p>
+                                        )}
+                                    </h3>
+            
+                                    {/* tags */}
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {(image.tags || []).map((t) => (
+                                        <span key={t} className="text-xs px-2 py-1 rounded-full bg-[#019cb9] text-white">
+                                            # {t}
+                                        </span>
+                                        ))}
+                                    </div>
+            
+                                    {/* comments */}
+                                    <div className="space-y-3 text-sm text-gray-600">
+                                        <p className="text-gray-500">Comments go here…</p>
+                                    </div>
                                 </div>
-        
-                                {/* comments */}
-                                <div className="space-y-3 text-sm text-gray-600">
-                                    <p className="text-gray-500">Comments go here…</p>
-                                </div>
-                            </div>
-                        </aside>
+                            </aside>
                         </div>
                     </div>
                 </main>
