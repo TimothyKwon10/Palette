@@ -60,6 +60,8 @@ async function artStationScrape(search) {
           createdAt: admin.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
     }
+
+    console.log(validImages.length + " images added to db");
 }
 
 function generateId(source, url) {
