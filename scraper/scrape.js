@@ -29,7 +29,7 @@ async function artStationScrape(search) {
     //force lazy scroll a total of 3 times
     for (let i = 0; i < 3; i++) {
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-        await new Promise(resolve => setTimeout(resolve, 1250));
+        await new Promise(resolve => setTimeout(resolve, 3000));
     }
 
     await page.waitForSelector('a.gallery-grid-link');
@@ -40,7 +40,7 @@ async function artStationScrape(search) {
     });
     
     //process all images in batches of 4
-    const images = await processInBatches(artworkLinks, 4, (url) => scrapeImageFromPage(url, browser));
+    const images = await processInBatches(artworkLinks, 5, (url) => scrapeImageFromPage(url, browser));
     const validImages = images.filter(Boolean);
 
     await browser.close();
@@ -48,16 +48,19 @@ async function artStationScrape(search) {
         const id = generateId('artstation', image.src);
       
         await db.collection("generalImages").doc(id).set({
-          id: id,
-          url: image.src,
-          tags: [],
-          artist: image.artist,
-          colors: [],
-          image_vector: [],
-          title: image.alt,
-          category: search,
-          source: "artStation",
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
+            id: id,
+            url: image.src,
+            tags: [],
+            artist: image.artist,
+            colors: [],
+            image_vector: [],
+            title: image.alt,
+            width: image.width,
+            height: image.height,
+            category: search,
+            source: "artStation",
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            rand: Math.random()
         }, { merge: true });
     }
 
@@ -86,7 +89,9 @@ async function scrapeImageFromPage(url, browser) {
             return {
                 src: img?.src || null,
                 alt: img?.alt || null,
-                artist: a?.textContent?.trim() || null
+                artist: a?.textContent?.trim() || null,
+                width: img?.naturalWidth || img?.width || null,
+                height: img?.naturalHeight || img?.height || null,
             };
         });
 
@@ -108,6 +113,11 @@ async function processInBatches(items, batchSize, asyncFn) {
         const batch = items.slice(i, i + batchSize);
         const batchResults = await Promise.all(batch.map(asyncFn));
         results.push(...batchResults);
+
+        if (i + batchSize < items.length) {
+            console.log("Pausing 7s to avoid 429...");
+            await new Promise(resolve => setTimeout(resolve, 7000));
+        }
     }
   
     await new Promise(resolve => setTimeout(resolve, 3000));

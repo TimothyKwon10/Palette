@@ -1,74 +1,181 @@
-import { useMemo, useState, useEffect} from "react";
-import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { useEffect, useRef, useState, useCallback } from "react";
+import { collection, query, orderBy, startAt, startAfter, limit, getDocs } from "firebase/firestore"
 import { db } from '../FireBase/firebaseConfig.js';
 import Masonry from 'react-masonry-css';
 import { useNavigate } from "react-router-dom";
-import useAuthUser from "./useAuthUser.jsx"
 import InfiniteScroll from "react-infinite-scroll-component";
 
 function ImgMosaic({ images: propImages }) {
-    const { user, checking } = useAuthUser();
     const [images, setImages] = useState([]);
-    const [visibleCount, setVisibleCount] = useState(50);
-    const CHUNK = 50;
+    const [hasMore, setHasMore] = useState(true);
+    const [loadingFirst, setLoadingFirst] = useState(true);
+    const CHUNK = 40;
+
+    const seedRef = useRef(Math.random());
+    const lastDocRef = useRef(null); 
+    const wrappedRef = useRef(false);
+    const fetchingRef = useRef(false);
   
     useEffect(() => {
-      const fetchImages = async () => {
-        if (propImages) {
-          setImages(propImages);
-          return;
+        if (propImages !== undefined) {
+            setImages(propImages.slice(0, CHUNK));
+            setHasMore(propImages.length > CHUNK);
+            setLoadingFirst(false);
+            return;
         }
-        if (user) {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists()) {
-            setImages(userDoc.data().personal_feed || []);
+      
+        let cancelled = false;
+        (async () => {
+          setImages([]);
+          setHasMore(true);
+          setLoadingFirst(true);
+          seedRef.current = Math.random();
+          lastDocRef.current = null;
+          wrappedRef.current = false;
+      
+          try {
+            const first = await fetchRandomPage({
+              seed: seedRef.current,
+              afterSnap: null,
+              wrapped: false,
+              pageSize: CHUNK,
+            });
+      
+            if (!cancelled) {
+              setImages(first.chunk);
+              lastDocRef.current = first.lastDoc;
+              wrappedRef.current = first.wrapped;
+              setHasMore(first.hasMore);
+            }
+          } finally {
+            if (!cancelled) setLoadingFirst(false);
           }
-        } else {
-          const snapshot = await getDocs(collection(db, "generalImages"));
-          const imgs = snapshot.docs.map(d => ({ id: d.id, url: d.data().url }));
-          setImages(imgs);
-        }
-      };
-      fetchImages();
-    }, [user, propImages]);
+        })();
+      
+        return () => {
+          cancelled = true;
+        };
+    }, [propImages]);
   
-    // reset visibleCount when a new image list arrives
-    useEffect(() => {
-      setVisibleCount(Math.min(CHUNK, images.length));
-    }, [images]);
-  
-    const visibleImages = useMemo(
-      () => images.slice(0, visibleCount),
-      [images, visibleCount]
-    );
-  
-    const breakpointColumnsObj = { default: 4, 1100: 3, 700: 2, 500: 1 };
     const navigate = useNavigate();
   
-    if (checking) return <p>Loading auth...</p>;
+    const fetchNext = useCallback(async () => {
+        if (fetchingRef.current || !hasMore) return;
+        fetchingRef.current = true;
+        try {
+          if (propImages && propImages.length > 0) {
+            // client-side infinite scroll
+            console.log("HEYO SERACH");
+            const nextSlice = propImages.slice(images.length, images.length + CHUNK);
+            setImages((prev) => [...prev, ...nextSlice]);
+            setHasMore(images.length + CHUNK < propImages.length);
+          } else {
+            // Firestore infinite scroll
+            console.log("HELLO NOT SEARCH");
+            const next = await fetchRandomPage({
+              seed: seedRef.current,
+              afterSnap: lastDocRef.current,
+              wrapped: wrappedRef.current,
+              pageSize: CHUNK,
+            });
+    
+            setImages((prev) => [...prev, ...next.chunk]);
+            lastDocRef.current = next.lastDoc;
+            wrappedRef.current = next.wrapped;
+            setHasMore(next.hasMore);
+          }
+        } finally {
+          fetchingRef.current = false;
+        }
+    }, [propImages, hasMore, images.length]);
+    
+    if (loadingFirst) return <p className="text-center py-8">Loading…</p>;
   
     return (
-      <div>
         <InfiniteScroll
-          dataLength={visibleImages.length}
-          next={() => setVisibleCount(c => Math.min(c + CHUNK, images.length))}
-          hasMore={visibleImages.length < images.length}
-          loader={<p className="text-center text-sm text-gray-500 py-4">Loading more...</p>}
+          dataLength = {images.length}
+          next = {fetchNext}
+          hasMore = {hasMore}
+          scrollThreshold = "650px"
+          loader=  {<p className="text-center text-sm text-gray-500 py-4">Loading more…</p>}
         >
             <Masonry
-                breakpointCols={breakpointColumnsObj}
-                className="my-masonry-grid"
-                columnClassName="my-masonry-grid_column"
+            breakpointCols={{ default: 4, 1100: 3, 700: 2, 500: 1 }}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
             >
-                {visibleImages.map(img => (
-                <button key={img.id} onClick={() => navigate(`/image/${img.id}`)}>
-                    <img src={img.url} loading="lazy" className="rounded-lg w-full" />
+            {images.map(img => (
+                <div key={img.id} className="mb-4 rounded-lg bg-gray-200 overflow-hidden">
+                <button onClick={() => navigate(`/image/${img.id}`)} className="block w-full">
+                    <img
+                    src={img.url}
+                    alt={img.title || ""}
+                    width={img.width}
+                    height={img.height}
+                    className="w-full h-auto object-cover"
+                    />
                 </button>
-                ))}
+                </div>
+            ))}
             </Masonry>
         </InfiniteScroll>
-      </div>
     );
+
+    async function fetchRandomPage({ seed, afterSnap, wrapped, pageSize }) {
+        const col = collection(db, "generalImages");
+      
+        if (!wrapped) {
+          let q;
+          if (!afterSnap) {
+            // first page of the session
+            q = query(col, orderBy("rand"), startAt(seed), limit(pageSize));
+          } else {
+            // subsequent pages in the first segment
+            q = query(col, orderBy("rand"), startAfter(afterSnap), limit(pageSize));
+          }
+      
+          const snap = await getDocs(q);
+          const chunk = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      
+          if (snap.size === pageSize) {
+            // still more in this segment
+            return {
+              chunk,
+              lastDoc: snap.docs[snap.docs.length - 1],
+              wrapped: false,
+              hasMore: true
+            };
+          }
+          if (chunk.length > 0) {
+            return {
+              chunk,
+              lastDoc: null,
+              wrapped: true,
+              hasMore: true
+            };
+          }
+      
+          // If nothing came back (e.g., seed is greater than max rand), go straight to wrapped segment.
+          wrapped = true;
+        }
+      
+        let q2;
+        if (!afterSnap) {
+          q2 = query(col, orderBy("rand"), startAt(0), limit(pageSize));
+        } else {
+          q2 = query(col, orderBy("rand"), startAfter(afterSnap), limit(pageSize));
+        }
+      
+        const snap2 = await getDocs(q2);
+        const chunk2 = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
+      
+        return {
+          chunk: chunk2,
+          lastDoc: snap2.docs[snap2.docs.length - 1] || null,
+          wrapped: true,
+          hasMore: snap2.size === pageSize
+        };
+    }
   }
   
   export default ImgMosaic;

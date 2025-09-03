@@ -13,10 +13,12 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "axios": "^1.10.0",
+    "canvas": "^3.2.0",
     "dotenv": "^17.2.0",
     "firebase": "^11.9.0",
     "firebase-admin": "^13.4.0",
     "graphql-request": "^7.2.0",
+    "image-size": "^2.0.2",
     "node-cron": "^4.2.1",
     "node-fetch": "^2.7.0",
     "puppeteer-extra": "^3.3.6",

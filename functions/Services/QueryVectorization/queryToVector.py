@@ -94,7 +94,8 @@ def root(query: Query):
 
     #run cosine similarity on vector and image matrix 
     similarities = np.dot(image_vector_cache["matrix"], query_vector.T).flatten()
-    top_indices = similarities.argsort()[::-1][:20]
+    top_indices = similarities.argsort()[::-1][:200]
+    np.random.shuffle(top_indices)
     results = [{"id": image_vector_cache["ids"][i], "score": float(similarities[i])} for i in top_indices]
 
     return {"matches": results}
