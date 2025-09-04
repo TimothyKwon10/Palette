@@ -44,3 +44,5 @@ scraper/artstation.cookies.json
 # Delete the db of images
 functions/deleteGeneralImages.mjs
 functions/count.mjs
+functions/backfillUpdatedAt.mjs
+functions/backfillVector.mjs

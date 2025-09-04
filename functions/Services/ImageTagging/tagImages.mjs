@@ -40,7 +40,8 @@ async function tagImages(images) {
                 await db.collection("generalImages").doc(tagObj.id).update({
                     tags: tagObj.tags,
                     image_vector: vectorObj.image_vector,
-                    colors: colorObj.palette
+                    colors: colorObj.palette,
+                    hasVector: true
                 });
             }
         }

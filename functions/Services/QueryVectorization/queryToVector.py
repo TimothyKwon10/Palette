@@ -1,21 +1,15 @@
-from fastapi import FastAPI, Header, HTTPException, status
-from fastapi.middleware.cors import CORSMiddleware 
-
-from open_clip import create_model_and_transforms, get_tokenizer
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
-import torch
-import torch.nn.functional as F
-import numpy as np
+import os, json, numpy as np, torch, torch.nn.functional as F
 import firebase_admin
-from firebase_admin import credentials, firestore 
-import os
-import json
-import requests
-import random
+from firebase_admin import credentials, firestore
+from datetime import datetime, timezone
+from fastapi import FastAPI, Header, HTTPException, status
 
+# -------------------- FastAPI --------------------
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -24,59 +18,128 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# -------------------- Firebase -------------------
 if "FIREBASE_SERVICE_ACCOUNT_JSON" in os.environ:
-    # Railway production mode
-    service_account_info = json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT_JSON"])
-    cred = credentials.Certificate(service_account_info)
+    cred = credentials.Certificate(json.loads(os.environ["FIREBASE_SERVICE_ACCOUNT_JSON"]))
 else:
-    # Local development
     cred = credentials.Certificate("../../serviceAccountKey.json")
-
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-def l2_normalize(arr: np.ndarray) -> np.ndarray:
-    norms = np.linalg.norm(arr, axis=1, keepdims=True)
-    return arr / np.where(norms == 0, 1, norms)
-
-#Store vector data in RAM for quick cosine similarity comparisons
-image_vector_cache = {
-    "ids": [],
-    "urls": [],
-    "embeddings": None,
-    "matrix": None
-}
-
-def collect_image_vectors():
-    snapshot = db.collection("generalImages") \
-        .where("image_vector", "!=", []) \
-        .stream()
-
-    vectors = [(doc.id, doc.to_dict()["image_vector"], doc.to_dict().get("url")) for doc in snapshot]
-    ids, embeddings, urls = zip(*vectors)
-
-    #create a normalized matrix (all unit vectors) for image vectors 
-    matrix = l2_normalize(np.array(embeddings))
-
-    image_vector_cache["ids"] = list(ids)
-    image_vector_cache["urls"] = list(urls)
-    image_vector_cache["embeddings"] = embeddings
-    image_vector_cache["matrix"] = matrix
-
-@app.on_event("startup")
-def load_image_vectors():
-    collect_image_vectors()
-
-@app.post("/refresh")
-def refresh_db_vectors():
-    collect_image_vectors()
-    return {"status": "refreshed", "count": len(image_vector_cache['ids'])}
-
-
+# -------------------- Model (example) ------------
+from open_clip import create_model_and_transforms, get_tokenizer
 device = "cpu"
 model, _, preprocess = create_model_and_transforms("ViT-B-32", pretrained="laion2b_s34b_b79k")
 tokenizer = get_tokenizer("ViT-B-32")
 model.to(device).eval()
+
+# -------------------- Cache ----------------------
+RANGE_FIELD = "updatedAt"      # or "createdAt" if you don't write updatedAt
+COLLECTION  = "generalImages"
+
+def l2_normalize(arr: np.ndarray) -> np.ndarray:
+    if arr.size == 0:
+        return arr
+    norms = np.linalg.norm(arr, axis=1, keepdims=True)
+    norms = np.where(norms == 0, 1.0, norms)
+    return arr / norms
+
+image_vector_cache = {
+    "ids": [],            # list[str]
+    "urls": [],           # list[str|None]
+    "embeddings": [],     # list[list[float]]
+    "matrix": None,       # np.ndarray (N x D, L2-normalized)
+    "id_to_idx": {},      # dict[str,int]
+    "last_refresh": None  # datetime aware (UTC)
+}
+
+def _rebuild_matrix():
+    embs = np.asarray(image_vector_cache["embeddings"], dtype=np.float32)
+    image_vector_cache["matrix"] = l2_normalize(embs) if embs.size else None
+
+# -------------------- Loaders --------------------
+def collect_image_vectors_full():
+    """Full warm-up: load all docs that already have vectors."""
+    docs = db.collection(COLLECTION).where("hasVector", "==", True).stream()
+
+    ids, urls, embs = [], [], []
+    for doc in docs:
+        d = doc.to_dict()
+        vec = d.get("image_vector")
+        if not vec:
+            continue
+        ids.append(doc.id)
+        urls.append(d.get("url"))
+        embs.append(vec)
+
+    image_vector_cache["ids"] = ids
+    image_vector_cache["urls"] = urls
+    image_vector_cache["embeddings"] = embs
+    image_vector_cache["id_to_idx"] = {doc_id: i for i, doc_id in enumerate(ids)}
+    image_vector_cache["last_refresh"] = datetime.now(timezone.utc)
+    _rebuild_matrix()
+
+def collect_image_vectors_new_only():
+    """
+    Delta loader: fetch ONLY docs not already in the cache.
+    Uses RANGE_FIELD to limit the scan to new docs since last refresh.
+    """
+    last = image_vector_cache["last_refresh"]
+    if last is None:
+        collect_image_vectors_full()
+        return 0
+
+    # Firestore requires order_by on the same field used in range filter
+    q = (db.collection(COLLECTION)
+           .where("hasVector", "==", True)
+           .where(RANGE_FIELD, ">", last)
+           .order_by(RANGE_FIELD))
+
+    new_docs = list(q.stream())
+    if not new_docs:
+        image_vector_cache["last_refresh"] = datetime.now(timezone.utc)
+        return 0
+
+    added = 0
+    ids   = image_vector_cache["ids"]
+    urls  = image_vector_cache["urls"]
+    embs  = image_vector_cache["embeddings"]
+    idx   = image_vector_cache["id_to_idx"]
+
+    for doc in new_docs:
+        if doc.id in idx:
+            # skip: "only pull images that are currently not in the cache"
+            continue
+        d   = doc.to_dict()
+        vec = d.get("image_vector")
+        if not vec:
+            continue
+        idx[doc.id] = len(ids)
+        ids.append(doc.id)
+        urls.append(d.get("url"))
+        embs.append(vec)
+        added += 1
+
+    if added:
+        _rebuild_matrix()
+
+    image_vector_cache["last_refresh"] = datetime.now(timezone.utc)
+    return added
+
+# -------------------- FastAPI hooks ----------------
+@app.on_event("startup")
+def load_image_vectors():
+    collect_image_vectors_full()
+
+@app.post("/refresh")
+def refresh_db_vectors():
+    added = collect_image_vectors_new_only()
+    return {
+        "status": "ok",
+        "added": added,
+        "total_in_cache": len(image_vector_cache["ids"]),
+        "refreshed_at": image_vector_cache["last_refresh"].isoformat()
+    }
 
 class Query(BaseModel):
     text: str

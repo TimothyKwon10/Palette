@@ -54,10 +54,12 @@ async function artStationScrape(search) {
             artist: image.artist,
             colors: [],
             image_vector: [],
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
             title: image.alt,
             width: image.width,
             height: image.height,
             category: search,
+            hasVector: false,
             source: "artStation",
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             rand: Math.random()
