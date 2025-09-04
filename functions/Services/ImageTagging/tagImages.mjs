@@ -26,21 +26,27 @@ async function tagImages(images) {
     
     const ready = await waitForModelReady();
     if (ready) {
-        const imageData = await fetchTags(images);
-        const imageTagsRAMPP = imageData.ram_results;
-        const imageVectorsCLIP = imageData.clip_results;
-        const imageColors = imageData.palette_results
-
-        //send the tags back to the db 
-        for (const tagObj of imageTagsRAMPP) {
-            const vectorObj = imageVectorsCLIP.find(v => v.id === tagObj.id);
-            const colorObj = imageColors.find(v => v.id === tagObj.id)
-
-            await db.collection("generalImages").doc(tagObj.id).update({
-                tags: tagObj.tags,
-                image_vector: vectorObj.image_vector,
-                colors: colorObj.palette
-            });
+        try {
+            const imageData = await fetchTags(images);
+            const imageTagsRAMPP = imageData.ram_results;
+            const imageVectorsCLIP = imageData.clip_results;
+            const imageColors = imageData.palette_results
+    
+            //send the tags back to the db 
+            for (const tagObj of imageTagsRAMPP) {
+                const vectorObj = imageVectorsCLIP.find(v => v.id === tagObj.id);
+                const colorObj = imageColors.find(v => v.id === tagObj.id)
+    
+                await db.collection("generalImages").doc(tagObj.id).update({
+                    tags: tagObj.tags,
+                    image_vector: vectorObj.image_vector,
+                    colors: colorObj.palette
+                });
+            }
+        }
+        catch (err) {
+            console.log("Stopping pod as there was an error in sending over the images to the Pod ", err)
+            await stopPod();
         }
     }
     else {

@@ -16,10 +16,13 @@ export async function fetchImgUrlsFromQuery(query) {
           const snap = await getDoc(doc(db, "generalImages", match.id));
           if (!snap.exists()) return null;
 
-          const { url } = snap.data() || {};
+          const url = snap.get("url");
           if (!url) return null;
 
-          return { id: match.id, url };
+          const width = snap.get("width");
+          const height = snap.get("height");
+
+          return { id: match.id, url, width, height };
         })
       );
     

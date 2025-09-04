@@ -39,7 +39,7 @@ async function artStationScrape(search) {
         return Array.from(document.querySelectorAll('a.gallery-grid-link')).map(a => a.href);
     });
     
-    //process all images in batches of 4
+    //process all images in batches of 5
     const images = await processInBatches(artworkLinks, 5, (url) => scrapeImageFromPage(url, browser));
     const validImages = images.filter(Boolean);
 
@@ -115,8 +115,8 @@ async function processInBatches(items, batchSize, asyncFn) {
         results.push(...batchResults);
 
         if (i + batchSize < items.length) {
-            console.log("Pausing 7s to avoid 429...");
-            await new Promise(resolve => setTimeout(resolve, 7000));
+            console.log("Pausing 10s to avoid 429...");
+            await new Promise(resolve => setTimeout(resolve, 10000));
         }
     }
   

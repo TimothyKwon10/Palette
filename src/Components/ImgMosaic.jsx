@@ -89,14 +89,14 @@ function ImgMosaic({ images: propImages }) {
         }
     }, [propImages, hasMore, images.length]);
     
-    if (loadingFirst) return <p className="text-center py-8">Loading…</p>;
+    if (loadingFirst) return <p className="text-center text-gray-500 py-4">Loading...</p>;
   
     return (
         <InfiniteScroll
           dataLength = {images.length}
           next = {fetchNext}
           hasMore = {hasMore}
-          scrollThreshold = "650px"
+          scrollThreshold = "1400px"
           loader=  {<p className="text-center text-sm text-gray-500 py-4">Loading more…</p>}
         >
             <Masonry
