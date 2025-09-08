@@ -3,7 +3,6 @@ import { useState } from "react";
 import { auth, db } from '../FireBase/firebaseConfig';
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { useNavigate } from 'react-router-dom';
-import { getFunctions, httpsCallable } from "firebase/functions";
 
 import Add from '../assets/images/add.png';
 import Cross from '../assets/images/cross.png';
@@ -68,17 +67,16 @@ function CategorySelect() {
                 preferences: arrayUnion(...selectedCategories)
             });
 
-            const response = await fetch("http://127.0.0.1:8000/admin/refresh-feeds", {
+            const idToken = await auth.currentUser.getIdToken(true);
+            await fetch("https://vectorsearch-production-d8b5.up.railway.app/refresh-personal-feed", {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": "Bearer AJSHDbjhbqweqey1SABDbi1jskhdbaAm" //NEED TO CHANGEGKJENWN
-                }
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${idToken}`,
+                },
             });
 
-            const result = await response.json();
-            console.log("Feed refresh result:", result);
-
+            console.log("new feed produced based off category selection");
             nav("/");
         }
         catch (err) {

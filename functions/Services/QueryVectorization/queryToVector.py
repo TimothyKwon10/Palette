@@ -5,9 +5,9 @@ from typing import List
 import os, json, numpy as np, torch, torch.nn.functional as F
 import firebase_admin
 import random
-from firebase_admin import credentials, firestore
 from datetime import datetime, timezone
-from fastapi import FastAPI, Header, HTTPException, status
+from fastapi import FastAPI, Header, HTTPException, status, Depends, BackgroundTasks
+from firebase_admin import credentials, firestore, auth as fb_auth
 
 # -------------------- FastAPI --------------------
 app = FastAPI()
@@ -188,7 +188,6 @@ class BatchQuery(BaseModel):
 @app.post("/admin/refresh-feeds")
 def generateFeed(authorization: str = Header(None, alias = "Authorization")):
     require_service_key(authorization)
-    url = "http://127.0.0.1:8000/vectorizeAndCompareBatch" #THIS NEEDS TO CHANGE FOR RAILWAY
 
     categoriesDict = {
         "Digital Art": "High-quality digital artworks created on a computer, in a variety of styles.",
@@ -228,8 +227,8 @@ def generateFeed(authorization: str = Header(None, alias = "Authorization")):
         mixed_feed_results = list(best.values())
         random.shuffle(mixed_feed_results)
 
-        # Now tack on 400 *purely random* extras at the end
-        extra_randoms = get_random_images(400)
+        # Now tack on 300 *purely random* extras at the end
+        extra_randoms = get_random_images(300)
 
         extra_unique = []
         seen_ids = {r["id"] for r in mixed_feed_results}
@@ -247,6 +246,79 @@ def generateFeed(authorization: str = Header(None, alias = "Authorization")):
         )
 
     return {"Refreshed Feed": True}
+
+def verify_id_token(authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing token")
+    token = authorization.split(" ", 1)[1]
+    try:
+        return fb_auth.verify_id_token(token)
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+def build_user_feed(uid: str):
+    uref  = db.collection("users").document(uid)
+    usnap = uref.get()
+    data  = usnap.to_dict() or {}
+    prefs = data.get("preferences") or []
+
+    categoriesDict = {
+        "Digital Art": "High-quality digital artworks created on a computer, in a variety of styles.",
+        "Photography": "High-quality photographs capturing a subject, scene, or atmosphere.",
+        "Illustration": "A high-quality illustration or drawing with line, form, and color.",
+        "3D Art": "A high-quality 3D render or model.",
+        "Concept Art": "High-quality concept art exploring mood, setting, or design ideas.",
+        "Character Design": "High-quality artwork focused on designing a character.",
+        "Landscape": "A high-quality landscape scene of nature or environment.",
+        "Portraiture": "A high-quality portrait of a person or character.",
+        "Cooking": "High-quality food imagery related to cooking, dishes, ingredients, or finished meals.",
+        "Architecture": "High-quality images of architecture, buildings, or structures.",
+        "Anime": "High-quality anime-style artwork, characters, or settings.",
+        "Fashion": "High-quality fashion photos highlighting unique clothing and style.",
+        "Abstract": "High-quality abstract art emphasizing shapes, color, and texture.",
+        "Traditional Painting": "A high-quality traditional painting created with physical media.",
+        "Graphic Design": "High-quality graphic design featuring typography and layout."
+    }
+
+    queries = [categoriesDict.get(pref, pref) for pref in prefs]
+    batch_results = run_batch(queries)
+
+    random_results = get_random_images(125)
+    combined = batch_results + random_results
+
+    best = {}
+    for r in combined:
+        if r["id"] not in best:
+            best[r["id"]] = r
+
+    # Shuffle personalized + 125 randoms
+    mixed_feed_results = list(best.values())
+    random.shuffle(mixed_feed_results)
+
+    # Now tack on 300 *purely random* extras at the end
+    extra_randoms = get_random_images(300)
+
+    extra_unique = []
+    seen_ids = {r["id"] for r in mixed_feed_results}
+    for r in extra_randoms:
+        if r["id"] not in seen_ids:
+            extra_unique.append(r)
+            seen_ids.add(r["id"])
+
+    # Final combined feed
+    final_results = mixed_feed_results + extra_unique
+
+    db.collection("users").document(uid).set(
+        {"personal_feed": final_results},
+        merge=True
+    )
+
+    return {"Refreshed Personal Feed": True}
+
+@app.post("/refresh-personal-feed")
+def refresh_feed_for_user(decoded=Depends(verify_id_token)):
+    uid = decoded["uid"]
+    return build_user_feed(uid)
 
 ADMIN_REFRESH_KEY = os.environ["ADMIN_REFRESH_KEY"]
 
@@ -305,4 +377,4 @@ def get_random_images(k=125):
         "height": image_vector_cache["heights"][i]
     }
     for i in indices
-    ]   
+    ]

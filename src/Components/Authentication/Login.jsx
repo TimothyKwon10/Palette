@@ -18,18 +18,19 @@ function Login() {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            navigate('/Home');
-
-            const response = await fetch("http://127.0.0.1:8000/admin/refresh-feeds", {
+            const idToken = await auth.currentUser.getIdToken(true);
+            await fetch("https://vectorsearch-production-d8b5.up.railway.app/refresh-personal-feed", {
                 method: "POST",
                 headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": "Bearer AJSHDbjhbqweqey1SABDbi1jskhdbaAm" //NEED TO CHANGEGKJENWN
-                }
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${idToken}`,
+                },
             });
+            
+            navigate('/Home');
         }
         catch (err) {
-            console.log("ERROR WITH REGISTER");
+            console.log("ERROR WITH LOGIN");
             console.log(err);
         }
     };

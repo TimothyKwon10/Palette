@@ -12,7 +12,6 @@ function Register() {
     //use states for different fields and page state 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const navigate = useNavigate();
     const provider = new GoogleAuthProvider();
 
