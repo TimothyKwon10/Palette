@@ -10,6 +10,7 @@ function Home() {
     const { loggedIn, checkingStatus } = AuthStatus();
     const [firstTime, setFirstTime] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [feed, setFeed] = useState([]);
 
     useEffect(() => {
         const checkFirstTime = async () => {
@@ -28,10 +29,15 @@ function Home() {
                 if (userData.firstTime) {
                     setFirstTime(true);
                 }
+
+                //grabs user feed
+                const data = userSnap.data();
+                if (data.personal_feed) {
+                    setFeed(data.personal_feed);
+                }
             }
             setLoading(false);
         };
-
         checkFirstTime();
     }, [])
 
@@ -43,7 +49,7 @@ function Home() {
         )
     }
 
-    if (!loggedIn || !firstTime) { //Not first time login or not logged in what so ever
+    if (!loggedIn) { //Not logged in 
         return (
             <div className = "px-6">
                 <Header/>
@@ -52,13 +58,23 @@ function Home() {
             </div>
         )
     }
-
-    return ( // first time logging in 
-        <div className = "px-6">
-            <Header/>
-            <CategorySelect/>
-        </div>
-    );
+    else if (!firstTime && loggedIn) { //Logged in, send personal feed
+        return (
+            <div className = "px-6">
+                <Header/>
+                <div className="mb-6"></div>
+                <ImgMosaic images={feed} />
+            </div>
+        )
+    }
+    else {
+        return ( // first time logging in 
+            <div className = "px-6">
+                <Header/>
+                <CategorySelect/>
+            </div>
+        );
+    }
 }
 
 export default Home;

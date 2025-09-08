@@ -11,7 +11,6 @@ function Login() {
     //use states for different fields and page state 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const navigate = useNavigate();
     const provider = new GoogleAuthProvider();
     
@@ -20,6 +19,14 @@ function Login() {
         try {
             await signInWithEmailAndPassword(auth, email, password);
             navigate('/Home');
+
+            const response = await fetch("http://127.0.0.1:8000/admin/refresh-feeds", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer AJSHDbjhbqweqey1SABDbi1jskhdbaAm" //NEED TO CHANGEGKJENWN
+                }
+            });
         }
         catch (err) {
             console.log("ERROR WITH REGISTER");
@@ -32,6 +39,14 @@ function Login() {
         try {
             await signInWithPopup(auth, provider);
             navigate('/Home');
+
+            const response = await fetch("http://127.0.0.1:8000/admin/refresh-feeds", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer AJSHDbjhbqweqey1SABDbi1jskhdbaAm" //NEED TO CHANGEGKJENWN
+                }
+            });
         }
         catch (err) {
             console.log("ERROR WITH GOOGLE REGISTER")
@@ -85,7 +100,10 @@ function Login() {
                         <FaGoogle className = "w-5 h-5" />
                         Login With Google
                     </button>
-                    <span className = "text-gray-600">Don't have an account? {' '}
+                    <span className = "text-gray-600">Explore as {' '}
+                        <Link to = "/Home" className = "text-[#017d96] underline">Guest</Link>
+                    </span>
+                    <span className = "text-gray-600 mt-2">Don't have an account? {' '}
                         <Link to = "/Register" className = "text-[#017d96] underline">Register</Link>
                     </span>
                 </form>

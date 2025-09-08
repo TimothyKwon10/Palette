@@ -13,8 +13,15 @@ export const PexelsDBPopulation = functions.https.onRequest(async (req, res) => 
 
     const PEXELS_API_KEY = process.env.PEXELS_API_KEY;
     const db = admin.firestore();
-    const categoryFieldsPrimary = ["nature", "poses", "portraiture"];
-    const categoryFieldsSecondary = ["fashion", "graphic design", "cyberpunk", "candid photography", "retro", "home decor", "food"];
+    const categoryFieldsPrimary = [
+    "photography", "studio photography", "editorial photography",
+    "street photography", "lifestyle photography", "macro photography", "portrait photography", "headshot", "studio portrait",
+    "natural light portrait", "profile portrait", "black and white portrait", "landscape", "mountains", "forest", "beach", "desert",
+    "waterfall", "night sky", "sunset", "architecture", "cityscape", "skyscraper", "interior design",
+    "minimal architecture", "brutalist", "staircase", "facade", "fashion", "street style", "lookbook", "runway", "fashion editorial",
+    "fashion portrait", "model studio", "food photography", "cuisine", "plating", "chef cooking",
+    "baking", "restaurant kitchen", "close up food", "Animals & Pets", "Plants & Flowers", "Beauty & Cosmetics"
+    ];
 
     const fetchAndStore = async (category, limit) => { //fetches the api key and the stores the necessary images into the images collection
         const response = await fetch(`https://api.pexels.com/v1/search?query=${category}&per_page=${limit}`, {
@@ -28,31 +35,30 @@ export const PexelsDBPopulation = functions.https.onRequest(async (req, res) => 
         const photos = data.photos;
 
         for (const photo of photos) {
-            await db.collection("generalImages").add({ //fields for each image_item in the db
+            await db.collection("generalImages").doc(`pexels_${photo.id}`).set ({ //fields for each image_item in the db
                 id: `pexels_${photo.id}`,
                 url: photo.src.large2x,
                 tags: [],
                 colors: [],
+                hasVector: false,
+                updatedAt: admin.firestore.FieldValue.serverTimestamp(),
                 image_vector: [],
                 category: category,
-                photographer: photo.photographer,
+                artist: photo.photographer,
                 photographer_url: photo.photographer_url,
                 width: photo.width,
                 height: photo.height,
+                rand: Math.random(),
                 source: "pexels",
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
                 original_id: photo.id
-            });
+            },
+            { merge: true });
         }
     };
 
     try {
         for (const category of categoryFieldsPrimary) { //fetches 25 images for primary category fields
-            await fetchAndStore(category, "25");
-        }
-
-        for (const category of categoryFieldsSecondary) { //fetches 15 images for secondary category fields
-            await fetchAndStore(category, "15");
+            await fetchAndStore(category, "80");
         }
 
         res.status(200).send("Images successfully added to Firestore.");

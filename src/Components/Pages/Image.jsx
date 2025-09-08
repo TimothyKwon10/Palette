@@ -484,6 +484,14 @@ function Image() {
                                 <h1 className="text-2xl font-[PlayfairDisplay] font-semibold mb-3">
                                     {image.title || "Untitled"}
                                 </h1>
+                                <h3 className="flex gap-1 text-sm mb-4">
+                                    Artist:{" "}
+                                    {image.artist ? (
+                                        <p className = "text-[#019cb9] font-bold">{image.artist}</p>
+                                    ) : (
+                                        <p className = "text-gray-500">Unknown</p>
+                                    )}
+                                </h3>
         
                                 {/* tags */}
                                 <div className="flex flex-wrap gap-2 mb-4">

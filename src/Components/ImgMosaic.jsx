@@ -65,13 +65,11 @@ function ImgMosaic({ images: propImages }) {
         try {
           if (propImages && propImages.length > 0) {
             // client-side infinite scroll
-            console.log("HEYO SERACH");
             const nextSlice = propImages.slice(images.length, images.length + CHUNK);
             setImages((prev) => [...prev, ...nextSlice]);
             setHasMore(images.length + CHUNK < propImages.length);
           } else {
             // Firestore infinite scroll
-            console.log("HELLO NOT SEARCH");
             const next = await fetchRandomPage({
               seed: seedRef.current,
               afterSnap: lastDocRef.current,

@@ -32,35 +32,47 @@ function Finalize() {
 
     const addToDB = async (e) => {
         e.preventDefault();
+        const url = sessionStorage.getItem("uploadPreviewURL");
 
         try {
-            const docRef = await addDoc(collection(db, "generalImages"), {
-            url: sessionStorage.getItem("uploadPreviewURL"),
-            uploadedAt: serverTimestamp(),
-            source: "User",
-            title: title || "",
-            artist: "N/A",
-            tags: tags || [],
-            description: description || "",
-            image_vector: [],
-            colors: []
-        })
+            const img = new Image();
+            img.src = url;
 
-            const userRef = doc(db, "users", user.uid);
-            await updateDoc(userRef, {
-                user_uploads: arrayUnion({
-                    id: docRef.id,
-                    url: sessionStorage.getItem("uploadPreviewURL")
-                }),
-            });
+            img.onload = async () => {
+                const docRef = await addDoc(collection(db, "generalImages"), {
+                url: url,
+                updatedAt: serverTimestamp(),
+                source: "User",
+                title: title || "",
+                width: img.width,
+                height: img.height,
+                artist: "Untitled Artist",
+                tags: tags || [],
+                description: description || "",
+                image_vector: [],
+                hasVector: false,
+                rand: Math.random(),
+                colors: []
+                })
+
+                const userRef = doc(db, "users", user.uid);
+                await updateDoc(userRef, {
+                    user_uploads: arrayUnion({
+                        id: docRef.id,
+                        url: url,
+                        width: img.width,
+                        height: img.height
+                    }),
+                });
+
+                sessionStorage.removeItem("uploadPreviewURL");
+                toast.success("Image published");
+                goHome();
+            }
         }
         catch (err) {
             console.log("error", err)
         }
-
-        sessionStorage.removeItem("uploadPreviewURL");
-        toast.success("Image published");
-        goHome();
     }
 
     return (

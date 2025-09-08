@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import List
 import os, json, numpy as np, torch, torch.nn.functional as F
 import firebase_admin
+import random
 from firebase_admin import credentials, firestore
 from datetime import datetime, timezone
 from fastapi import FastAPI, Header, HTTPException, status
@@ -34,7 +35,7 @@ tokenizer = get_tokenizer("ViT-B-32")
 model.to(device).eval()
 
 # -------------------- Cache ----------------------
-RANGE_FIELD = "updatedAt"      # or "createdAt" if you don't write updatedAt
+RANGE_FIELD = "updatedAt"
 COLLECTION  = "generalImages"
 
 def l2_normalize(arr: np.ndarray) -> np.ndarray:
@@ -45,12 +46,14 @@ def l2_normalize(arr: np.ndarray) -> np.ndarray:
     return arr / norms
 
 image_vector_cache = {
-    "ids": [],            # list[str]
-    "urls": [],           # list[str|None]
-    "embeddings": [],     # list[list[float]]
-    "matrix": None,       # np.ndarray (N x D, L2-normalized)
-    "id_to_idx": {},      # dict[str,int]
-    "last_refresh": None  # datetime aware (UTC)
+    "ids": [],
+    "urls": [],
+    "embeddings": [],
+    "matrix": None,
+    "id_to_idx": {},
+    "last_refresh": None,
+    "widths": [],
+    "heights": []
 }
 
 def _rebuild_matrix():
@@ -62,7 +65,7 @@ def collect_image_vectors_full():
     """Full warm-up: load all docs that already have vectors."""
     docs = db.collection(COLLECTION).where("hasVector", "==", True).stream()
 
-    ids, urls, embs = [], [], []
+    ids, urls, widths, heights, embs = [], [], [], [], []
     for doc in docs:
         d = doc.to_dict()
         vec = d.get("image_vector")
@@ -70,20 +73,21 @@ def collect_image_vectors_full():
             continue
         ids.append(doc.id)
         urls.append(d.get("url"))
+        widths.append(d.get("width"))
+        heights.append(d.get("height"))
         embs.append(vec)
 
+    image_vector_cache["widths"] = widths
+    image_vector_cache["heights"] = heights
     image_vector_cache["ids"] = ids
     image_vector_cache["urls"] = urls
     image_vector_cache["embeddings"] = embs
     image_vector_cache["id_to_idx"] = {doc_id: i for i, doc_id in enumerate(ids)}
     image_vector_cache["last_refresh"] = datetime.now(timezone.utc)
     _rebuild_matrix()
+    print(f"Loaded {len(ids)} image vectors into cache")
 
 def collect_image_vectors_new_only():
-    """
-    Delta loader: fetch ONLY docs not already in the cache.
-    Uses RANGE_FIELD to limit the scan to new docs since last refresh.
-    """
     last = image_vector_cache["last_refresh"]
     if last is None:
         collect_image_vectors_full()
@@ -117,6 +121,8 @@ def collect_image_vectors_new_only():
         idx[doc.id] = len(ids)
         ids.append(doc.id)
         urls.append(d.get("url"))
+        image_vector_cache["widths"].append(d.get("width"))
+        image_vector_cache["heights"].append(d.get("height"))
         embs.append(vec)
         added += 1
 
@@ -157,12 +163,24 @@ def root(query: Query):
 
     #run cosine similarity on vector and image matrix 
     similarities = np.dot(image_vector_cache["matrix"], query_vector.T).flatten()
-    top_indices = similarities.argsort()[::-1][:200]
-    np.random.shuffle(top_indices)
-    results = [{"id": image_vector_cache["ids"][i], "score": float(similarities[i])} for i in top_indices]
+    top_indices = similarities.argsort()[::-1][:250]
 
-    return {"matches": results}
+    shuffled_part = top_indices[:100].copy()
+    np.random.shuffle(shuffled_part)
 
+    final_indices = np.concatenate([shuffled_part, top_indices[100:]])
+
+    return {
+        "matches": [
+            {
+                "id": image_vector_cache["ids"][i],
+                "url": image_vector_cache["urls"][i],
+                "width": image_vector_cache["widths"][i],
+                "height": image_vector_cache["heights"][i]
+            }
+            for i in final_indices
+        ]
+    }
 
 class BatchQuery(BaseModel):
     texts: List[str]
@@ -198,8 +216,33 @@ def generateFeed(authorization: str = Header(None, alias = "Authorization")):
         queries = [categoriesDict.get(pref, pref) for pref in prefs]
         batch_results = run_batch(queries)
 
+        random_results = get_random_images(125)
+        combined = batch_results + random_results
+
+        best = {}
+        for r in combined:
+            if r["id"] not in best:
+                best[r["id"]] = r
+
+        # Shuffle personalized + 125 randoms
+        mixed_feed_results = list(best.values())
+        random.shuffle(mixed_feed_results)
+
+        # Now tack on 400 *purely random* extras at the end
+        extra_randoms = get_random_images(400)
+
+        extra_unique = []
+        seen_ids = {r["id"] for r in mixed_feed_results}
+        for r in extra_randoms:
+            if r["id"] not in seen_ids:
+                extra_unique.append(r)
+                seen_ids.add(r["id"])
+
+        # Final combined feed
+        final_results = mixed_feed_results + extra_unique
+
         db.collection("users").document(uid).set(
-            {"personal_feed": batch_results},
+            {"personal_feed": final_results},
             merge=True
         )
 
@@ -217,11 +260,16 @@ def run_batch(texts: list[str]):
 
         query_vector = text_features.squeeze().cpu().numpy().reshape(1, -1)
         similarities = np.dot(image_vector_cache["matrix"], query_vector.T).flatten()
-        top_indices = similarities.argsort()[::-1][:20]
+        top_indices = similarities.argsort()[::-1][:60]
 
         results.extend([
-            {"id": image_vector_cache["ids"][i], "url": image_vector_cache["urls"][i]}
-            for i in top_indices
+        {
+            "id": image_vector_cache["ids"][i],
+            "url": image_vector_cache["urls"][i],
+            "width": image_vector_cache["widths"][i],
+            "height": image_vector_cache["heights"][i]
+        }
+        for i in top_indices
         ])
 
     # de-dupe + shuffle
@@ -238,3 +286,23 @@ def run_batch(texts: list[str]):
 def require_service_key(authorization: str = Header(None, alias="Authorization")):
     if authorization != f"Bearer {ADMIN_REFRESH_KEY}":
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")
+
+def get_random_images(k=125):
+    all_ids = image_vector_cache["ids"]
+    all_urls = image_vector_cache["urls"]
+
+    if not all_ids:
+        return []
+
+    sample_size = min(k, len(all_ids))
+    indices = random.sample(range(len(all_ids)), sample_size)
+
+    return [
+    {
+        "id": all_ids[i],
+        "url": all_urls[i],
+        "width": image_vector_cache["widths"][i],
+        "height": image_vector_cache["heights"][i]
+    }
+    for i in indices
+    ]   

@@ -66,16 +66,18 @@ function CategorySelect() {
             const userRef = doc(db, "users", auth.currentUser.uid);
             await updateDoc(userRef, { firstTime: false,
                 preferences: arrayUnion(...selectedCategories)
-             });
-    
-            const functions = getFunctions();
-            const categoryBucket = httpsCallable(functions, 'CategoryBucketHandler');
+            });
 
-            console.log("Sending:", { categories: selectedCategories });
-            const result = await categoryBucket({ categories: selectedCategories });
-            
-            console.log("Result:", result);
-            console.log('Server response:', result.data);
+            const response = await fetch("http://127.0.0.1:8000/admin/refresh-feeds", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": "Bearer AJSHDbjhbqweqey1SABDbi1jskhdbaAm" //NEED TO CHANGEGKJENWN
+                }
+            });
+
+            const result = await response.json();
+            console.log("Feed refresh result:", result);
 
             nav("/");
         }

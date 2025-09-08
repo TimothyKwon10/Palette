@@ -33,8 +33,6 @@ export const CategoryBucketHandler = onCall(async (request) => {
         console.log("Incoming data object:", request);
         const { categories } = request.data;
 
-        console.log("HEYO CATEGORIES: " + categories);
-
         if (Array.isArray(categories)) {
             try {
                 const response = await fetch(`https://openrouter.ai/api/v1/chat/completions`, {

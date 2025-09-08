@@ -46,3 +46,4 @@ functions/deleteGeneralImages.mjs
 functions/count.mjs
 functions/backfillUpdatedAt.mjs
 functions/backfillVector.mjs
+functions/rand.mjs

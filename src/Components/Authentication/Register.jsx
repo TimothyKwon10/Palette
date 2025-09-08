@@ -90,7 +90,10 @@ function Register() {
                         <FaGoogle className = "w-5 h-5" />
                         Sign Up With Google
                     </button>
-                    <span className = "text-gray-600">Already have an account? {' '}
+                    <span className = "text-gray-600">Explore as {' '}
+                        <Link to = "/Home" className = "text-[#017d96] underline">Guest</Link>
+                    </span>
+                    <span className = "text-gray-600 mt-2">Already have an account? {' '}
                         <Link to = "/Login" className = "text-[#017d96] underline">Log In</Link>
                     </span>
                 </form>

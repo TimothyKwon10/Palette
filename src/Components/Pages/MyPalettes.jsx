@@ -100,7 +100,7 @@ function MyPalettes() {
                   <p className="text-gray-500">Save or like an image to create your first Palette.</p>
                   <button
                     onClick={goHome}
-                    className="py-2 px-4 rounded mt-5 bg-[#019cb9] text-white hover:bg-[#017d96] duration-500 ease-in-out transition-transform transform hover:scale-[1.03]"
+                    className="py-2 px-4 rounded mt-5 bg-[#019cb9] text-white transition-all duration-300 ease-in-out hover:bg-[#017d96] hover:scale-[1.03]"
                   >
                     Browse to begin
                   </button>

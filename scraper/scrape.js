@@ -61,7 +61,6 @@ async function artStationScrape(search) {
             category: search,
             hasVector: false,
             source: "artStation",
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
             rand: Math.random()
         }, { merge: true });
     }
@@ -79,7 +78,7 @@ async function scrapeImageFromPage(url, browser) {
     const artPage = await browser.newPage();
     try {
         await artPage.goto(url, { waitUntil: 'networkidle2' });
-        await artPage.waitForSelector('img.img-fit' || 'img.img-fluid', { timeout: 9000 }).catch(() => {});
+        await artPage.waitForSelector('img.img-fit' || 'img.img-fluid', { timeout: 15000 }).catch(() => {});
 
         const imageData = await artPage.evaluate(() => {
             const img = document.querySelector('img.img-fit, img.img-fluid');
