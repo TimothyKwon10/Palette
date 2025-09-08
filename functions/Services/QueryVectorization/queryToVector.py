@@ -283,7 +283,7 @@ def build_user_feed(uid: str):
     queries = [categoriesDict.get(pref, pref) for pref in prefs]
     batch_results = run_batch(queries)
 
-    random_results = get_random_images(120)
+    random_results = get_random_images(50)
     combined = batch_results + random_results
 
     best = {}
@@ -296,7 +296,7 @@ def build_user_feed(uid: str):
     random.shuffle(mixed_feed_results)
 
     # Now tack on 100 *purely random* extras at the end
-    extra_randoms = get_random_images(100)
+    extra_randoms = get_random_images(80)
 
     extra_unique = []
     seen_ids = {r["id"] for r in mixed_feed_results}
@@ -332,7 +332,7 @@ def run_batch(texts: list[str]):
 
         query_vector = text_features.squeeze().cpu().numpy().reshape(1, -1)
         similarities = np.dot(image_vector_cache["matrix"], query_vector.T).flatten()
-        top_indices = similarities.argsort()[::-1][:50]
+        top_indices = similarities.argsort()[::-1][:40]
 
         results.extend([
         {
