@@ -13,33 +13,44 @@ function Home() {
     const [feed, setFeed] = useState([]);
 
     useEffect(() => {
-        const checkFirstTime = async () => {
-            const user = auth.currentUser;
-            if (!user) {
-                setLoading(false);
-                return;
+    const checkFirstTime = async () => {
+        const user = auth.currentUser;
+        if (!user) {
+        setLoading(false);
+        return;
+        }
+
+        const userRef = doc(db, "users", user.uid);
+
+        const idToken = await user.getIdToken(true);
+        await fetch("https://vectorsearch-production-d8b5.up.railway.app/refresh-personal-feed", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${idToken}`,
+        },
+        });
+
+        // fetch updated user doc after refresh completes
+        const updatedSnap = await getDoc(userRef);
+
+        if (updatedSnap.exists()) {
+        const userData = updatedSnap.data();
+
+            if (userData.firstTime) {
+                setFirstTime(true);
             }
 
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
-
-            if (userSnap.exists()) {
-                const userData = userSnap.data();
-
-                if (userData.firstTime) {
-                    setFirstTime(true);
-                }
-
-                //grabs user feed
-                const data = userSnap.data();
-                if (data.personal_feed) {
-                    setFeed(data.personal_feed);
-                }
+            if (userData.personal_feed) {
+                setFeed(userData.personal_feed);
             }
-            setLoading(false);
-        };
-        checkFirstTime();
-    }, [])
+        }
+
+        setLoading(false);
+    };
+
+    checkFirstTime();
+    }, []);
 
     if (loading || checkingStatus) {
         return (

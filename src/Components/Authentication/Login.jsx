@@ -18,15 +18,7 @@ function Login() {
         e.preventDefault();
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            const idToken = await auth.currentUser.getIdToken(true);
-            await fetch("https://vectorsearch-production-d8b5.up.railway.app/refresh-personal-feed", {
-                method: "POST",
-                headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${idToken}`,
-                },
-            });
-            
+
             navigate('/Home');
         }
         catch (err) {

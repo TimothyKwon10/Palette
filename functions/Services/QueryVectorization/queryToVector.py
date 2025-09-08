@@ -185,67 +185,67 @@ def root(query: Query):
 class BatchQuery(BaseModel):
     texts: List[str]
 
-@app.post("/admin/refresh-feeds")
-def generateFeed(authorization: str = Header(None, alias = "Authorization")):
-    require_service_key(authorization)
+# @app.post("/admin/refresh-feeds")
+# def generateFeed(authorization: str = Header(None, alias = "Authorization")):
+#     require_service_key(authorization)
 
-    categoriesDict = {
-        "Digital Art": "High-quality digital artworks created on a computer, in a variety of styles.",
-        "Photography": "High-quality photographs capturing a subject, scene, or atmosphere.",
-        "Illustration": "A high-quality illustration or drawing with line, form, and color.",
-        "3D Art": "A high-quality 3D render or model.",
-        "Concept Art": "High-quality concept art exploring mood, setting, or design ideas.",
-        "Character Design": "High-quality artwork focused on designing a character.",
-        "Landscape": "A high-quality landscape scene of nature or environment.",
-        "Portraiture": "A high-quality portrait of a person or character.",
-        "Cooking": "High-quality food imagery related to cooking, dishes, ingredients, or finished meals.",
-        "Architecture": "High-quality images of architecture, buildings, or structures.",
-        "Anime": "High-quality anime-style artwork, characters, or settings.",
-        "Fashion": "High-quality fashion photos highlighting unique clothing and style.",
-        "Abstract": "High-quality abstract art emphasizing shapes, color, and texture.",
-        "Traditional Painting": "A high-quality traditional painting created with physical media.",
-        "Graphic Design": "High-quality graphic design featuring typography and layout."
-    }
+#     categoriesDict = {
+#         "Digital Art": "High-quality digital artworks created on a computer, in a variety of styles.",
+#         "Photography": "High-quality photographs capturing a subject, scene, or atmosphere.",
+#         "Illustration": "A high-quality illustration or drawing with line, form, and color.",
+#         "3D Art": "A high-quality 3D render or model.",
+#         "Concept Art": "High-quality concept art exploring mood, setting, or design ideas.",
+#         "Character Design": "High-quality artwork focused on designing a character.",
+#         "Landscape": "A high-quality landscape scene of nature or environment.",
+#         "Portraiture": "A high-quality portrait of a person or character.",
+#         "Cooking": "High-quality food imagery related to cooking, dishes, ingredients, or finished meals.",
+#         "Architecture": "High-quality images of architecture, buildings, or structures.",
+#         "Anime": "High-quality anime-style artwork, characters, or settings.",
+#         "Fashion": "High-quality fashion photos highlighting unique clothing and style.",
+#         "Abstract": "High-quality abstract art emphasizing shapes, color, and texture.",
+#         "Traditional Painting": "A high-quality traditional painting created with physical media.",
+#         "Graphic Design": "High-quality graphic design featuring typography and layout."
+#     }
 
-    for snap in db.collection("users").stream():
-        uid = snap.id
-        data = snap.to_dict()
-        prefs = data.get("preferences") or []
+#     for snap in db.collection("users").stream():
+#         uid = snap.id
+#         data = snap.to_dict()
+#         prefs = data.get("preferences") or []
 
-        queries = [categoriesDict.get(pref, pref) for pref in prefs]
-        batch_results = run_batch(queries)
+#         queries = [categoriesDict.get(pref, pref) for pref in prefs]
+#         batch_results = run_batch(queries)
 
-        random_results = get_random_images(125)
-        combined = batch_results + random_results
+#         random_results = get_random_images(125)
+#         combined = batch_results + random_results
 
-        best = {}
-        for r in combined:
-            if r["id"] not in best:
-                best[r["id"]] = r
+#         best = {}
+#         for r in combined:
+#             if r["id"] not in best:
+#                 best[r["id"]] = r
 
-        # Shuffle personalized + 125 randoms
-        mixed_feed_results = list(best.values())
-        random.shuffle(mixed_feed_results)
+#         # Shuffle personalized + 125 randoms
+#         mixed_feed_results = list(best.values())
+#         random.shuffle(mixed_feed_results)
 
-        # Now tack on 300 *purely random* extras at the end
-        extra_randoms = get_random_images(300)
+#         # Now tack on 300 *purely random* extras at the end
+#         extra_randoms = get_random_images(300)
 
-        extra_unique = []
-        seen_ids = {r["id"] for r in mixed_feed_results}
-        for r in extra_randoms:
-            if r["id"] not in seen_ids:
-                extra_unique.append(r)
-                seen_ids.add(r["id"])
+#         extra_unique = []
+#         seen_ids = {r["id"] for r in mixed_feed_results}
+#         for r in extra_randoms:
+#             if r["id"] not in seen_ids:
+#                 extra_unique.append(r)
+#                 seen_ids.add(r["id"])
 
-        # Final combined feed
-        final_results = mixed_feed_results + extra_unique
+#         # Final combined feed
+#         final_results = mixed_feed_results + extra_unique
 
-        db.collection("users").document(uid).set(
-            {"personal_feed": final_results},
-            merge=True
-        )
+#         db.collection("users").document(uid).set(
+#             {"personal_feed": final_results},
+#             merge=True
+#         )
 
-    return {"Refreshed Feed": True}
+#     return {"Refreshed Feed": True}
 
 def verify_id_token(authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
@@ -283,7 +283,7 @@ def build_user_feed(uid: str):
     queries = [categoriesDict.get(pref, pref) for pref in prefs]
     batch_results = run_batch(queries)
 
-    random_results = get_random_images(125)
+    random_results = get_random_images(120)
     combined = batch_results + random_results
 
     best = {}
@@ -295,8 +295,8 @@ def build_user_feed(uid: str):
     mixed_feed_results = list(best.values())
     random.shuffle(mixed_feed_results)
 
-    # Now tack on 300 *purely random* extras at the end
-    extra_randoms = get_random_images(300)
+    # Now tack on 100 *purely random* extras at the end
+    extra_randoms = get_random_images(100)
 
     extra_unique = []
     seen_ids = {r["id"] for r in mixed_feed_results}
@@ -320,7 +320,7 @@ def refresh_feed_for_user(decoded=Depends(verify_id_token)):
     uid = decoded["uid"]
     return build_user_feed(uid)
 
-ADMIN_REFRESH_KEY = os.environ["ADMIN_REFRESH_KEY"]
+# ADMIN_REFRESH_KEY = os.environ["ADMIN_REFRESH_KEY"]
 
 def run_batch(texts: list[str]):
     results = []
@@ -332,7 +332,7 @@ def run_batch(texts: list[str]):
 
         query_vector = text_features.squeeze().cpu().numpy().reshape(1, -1)
         similarities = np.dot(image_vector_cache["matrix"], query_vector.T).flatten()
-        top_indices = similarities.argsort()[::-1][:60]
+        top_indices = similarities.argsort()[::-1][:50]
 
         results.extend([
         {
@@ -355,9 +355,9 @@ def run_batch(texts: list[str]):
 
     return (results)
 
-def require_service_key(authorization: str = Header(None, alias="Authorization")):
-    if authorization != f"Bearer {ADMIN_REFRESH_KEY}":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")
+# def require_service_key(authorization: str = Header(None, alias="Authorization")):
+#     if authorization != f"Bearer {ADMIN_REFRESH_KEY}":
+#         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="unauthorized")
 
 def get_random_images(k=125):
     all_ids = image_vector_cache["ids"]
