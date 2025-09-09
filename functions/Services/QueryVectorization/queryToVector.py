@@ -1,4 +1,3 @@
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
@@ -6,14 +5,16 @@ import os, json, numpy as np, torch, torch.nn.functional as F
 import firebase_admin
 import random
 from datetime import datetime, timezone
-from fastapi import FastAPI, Header, HTTPException, status, Depends, BackgroundTasks
+from fastapi import FastAPI, Header, HTTPException, status, Depends, BackgroundTasks, Query
+from fastapi.responses import Response
+import httpx
 from firebase_admin import credentials, firestore, auth as fb_auth
 
 # -------------------- FastAPI --------------------
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["*"],   # accept from all
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -147,11 +148,11 @@ def refresh_db_vectors():
         "refreshed_at": image_vector_cache["last_refresh"].isoformat()
     }
 
-class Query(BaseModel):
+class Q(BaseModel):
     text: str
 
 @app.post("/vectorizeAndCompare")
-def root(query: Query):
+def root(query: Q):
     tokens = tokenizer([query.text]).to(device)
 
     with torch.no_grad():
@@ -261,7 +262,7 @@ def build_user_feed(uid: str):
 
     categoriesDict = {
         "Digital Art": "High-quality digital artworks created on a computer, in a variety of styles.",
-        "Photography": "High-quality photos of people, landscapes, or scenes. Exclude cameras, products, or equipment."
+        "Photography": "High-quality photos of people, landscapes, or scenes. Exclude cameras, products, or equipment.",
         "Illustration": "A high-quality illustration or drawing with line, form, and color.",
         "3D Art": "A high-quality 3D render or model.",
         "Concept Art": "High-quality concept art exploring mood, setting, or design ideas.",
@@ -375,3 +376,26 @@ def get_random_images(k=125):
     }
     for i in indices
     ]
+
+@app.get("/cai")
+async def process_cai_image(
+    id: str = Query(..., description="The CAI IIIF image ID"),
+    w: int = Query(1200, description="Requested width (default 1200)")
+):
+    if not id:
+        raise HTTPException(status_code=400, detail="Missing image ID")
+
+    url = f"https://www.artic.edu/iiif/2/{id}/full/{w},/0/default.jpg"
+
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            r = await client.get(url)
+            if r.status_code != 200:
+                raise HTTPException(status_code=r.status_code, detail="Upstream error")
+            return Response(
+                content=r.content,
+                media_type="image/jpeg",
+                headers={"Cache-Control": "public, max-age=31536000, immutable"}
+            )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Proxy error: {str(e)}")
