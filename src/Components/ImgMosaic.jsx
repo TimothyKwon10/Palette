@@ -4,7 +4,7 @@ import { db } from '../FireBase/firebaseConfig.js';
 import Masonry from 'react-masonry-css';
 import { useNavigate } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { resolveImage } from "./imageUrls.jsx"
+import { resolveImage } from "./imageUrls.jsx";
 
 function ImgMosaic({ images: propImages }) {
     const [images, setImages] = useState([]);
@@ -88,52 +88,37 @@ function ImgMosaic({ images: propImages }) {
         }
     }, [propImages, hasMore, images.length]);
   
-    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches;
+    const isMobile =
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 640px)").matches;
 
     return (
-      <InfiniteScroll
-        dataLength={images.length}
-        next={fetchNext}
-        hasMore={hasMore}
-        scrollThreshold="1400px"
-      >
-        <Masonry
-          breakpointCols={{ default: 4, 1100: 3, 700: 2, 500: 1 }}
-          className="my-masonry-grid"
-          columnClassName="my-masonry-grid_column"
+        <InfiniteScroll
+          dataLength = {images.length}
+          next = {fetchNext}
+          hasMore = {hasMore}
+          scrollThreshold = "1400px"
         >
-          {images.map((img) => {
-            const url = resolveImage(img.url, isMobile);
-
-            return (
-              <div
-                key={img.id}
-                className="mb-4 rounded-lg bg-gray-200 overflow-hidden"
-              >
-                <button
-                  onClick={() => navigate(`/image/${img.id}`)}
-                  className="block w-full"
-                >
-                  <img
-                    src={url}
-                    alt={img.title || ""}
-                    width={img.width}
-                    height={img.height}
-                    className="w-full h-auto object-cover"
-                    loading="lazy"
-                    decoding="async"
-                    onError={(e) => {
-                      console.warn("IMG FAIL:", e.currentTarget.src);
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = "/placeholder.svg";
-                    }}
-                  />
-                </button>
-              </div>
-            );
-          })}
-        </Masonry>
-      </InfiniteScroll>
+            <Masonry
+            breakpointCols={{ default: 4, 1100: 3, 700: 2, 500: 1 }}
+            className="my-masonry-grid"
+            columnClassName="my-masonry-grid_column"
+            >
+            {images.map(img => (
+                <div key={img.id} className="mb-4 rounded-lg bg-gray-200 overflow-hidden">
+                  <button onClick={() => navigate(`/image/${img.id}`)} className="block w-full">
+                      <img
+                      src={resolveImage(img.url, isMobile)}
+                      alt={img.title || ""}
+                      width={img.width}
+                      height={img.height}
+                      className="w-full h-auto object-cover"
+                      />
+                  </button>
+                </div>
+            ))}
+            </Masonry>
+        </InfiniteScroll>
     );
 
     async function fetchRandomPage({ seed, afterSnap, wrapped, pageSize }) {
