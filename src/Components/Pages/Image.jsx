@@ -12,6 +12,7 @@ import Expand from "../../assets/images/expand.png"
 import WhiteCross from "../../assets/images/whiteCross.png"
 import Animation from "../animation.jsx"
 import toast from "react-hot-toast";
+import { resolveImage } from "../imageUrls.jsx"
 
 function Image() {  
     const { user, checking } = useAuthUser();
@@ -26,6 +27,9 @@ function Image() {
     const [draftSelected, setDraftSelected] = useState([]);
     const [isSaving, setIsSaving] = useState(false);
 
+    const isMobile =
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 640px)").matches;
 
     const openSaveModal = () => {
         setDraftCollections([...collections]);
@@ -349,8 +353,8 @@ function Image() {
                                 style={{ height: '80vh', width: '100%' }}
                             >
                                 <img
-                                    src={image.url}
-                                    alt=""
+                                    src={resolveImage(image.url, isMobile)}
+                                    alt={image.title || ""}
                                     className="block max-w-full max-h-[calc(80vh-2rem)] object-contain"
                                 />
         
@@ -401,7 +405,7 @@ function Image() {
                                     <img src = {WhiteCross} className = "h-6 w-auto"/>
                                 </div>
                             </button>
-                            <img src={image.url} className = "max-h-[90vh] w-auto object-contain"/>
+                            <img src={resolveImage(image.url, isMobile)} className = "max-h-[90vh] w-auto object-contain"/>
                         </div>
                     </div>
                 )}
@@ -478,8 +482,8 @@ function Image() {
                                 style={{ height: '80vh', width: '100%' }}
                             >
                                 <img
-                                    src={image.url}
-                                    alt=""
+                                    src={resolveImage(image.url, isMobile)}
+                                    alt={image.title || ""}
                                     className="block max-w-full max-h-[calc(80vh-2rem)] object-contain"
                                 />
         
@@ -530,7 +534,7 @@ function Image() {
                                     <img src = {WhiteCross} className = "h-6 w-auto"/>
                                 </div>
                             </button>
-                            <img src={image.url} className = "max-h-[90vh] w-auto object-contain"/>
+                            <img src={resolveImage(image.url, isMobile)} className = "max-h-[90vh] w-auto object-contain"/>
                         </div>
                     </div>
                 )}
