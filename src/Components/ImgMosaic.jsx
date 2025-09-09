@@ -86,8 +86,6 @@ function ImgMosaic({ images: propImages }) {
           fetchingRef.current = false;
         }
     }, [propImages, hasMore, images.length]);
-    
-    if (loadingFirst) return <p className="text-center text-gray-500 py-4">Loading...</p>;
   
     return (
         <InfiniteScroll
@@ -95,7 +93,6 @@ function ImgMosaic({ images: propImages }) {
           next = {fetchNext}
           hasMore = {hasMore}
           scrollThreshold = "1400px"
-          loader=  {<p className="text-center text-sm text-gray-500 py-4">Loading more…</p>}
         >
             <Masonry
             breakpointCols={{ default: 4, 1100: 3, 700: 2, 500: 1 }}
@@ -136,7 +133,6 @@ function ImgMosaic({ images: propImages }) {
           const chunk = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       
           if (snap.size === pageSize) {
-            // still more in this segment
             return {
               chunk,
               lastDoc: snap.docs[snap.docs.length - 1],

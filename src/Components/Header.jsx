@@ -16,11 +16,22 @@ function Header() {
     const [ menu, setMenu ] = useState(false);
     const menuRef = useRef();
 
+    const goToCollections = () => navigate("/MyPalettes");
+    const goToCreate = () => navigate("/Create");
+    const goToLogin = () => navigate("/Login");
+    const goToRegister = () => navigate("/Register");
+    const goToHome = () => navigate("/Home")
+
+    const isPalettes = location.pathname === "/MyPalettes";
+    const isCreate = location.pathname === "/Create";
+    const isLogin = location.pathname === "/Login";
+    const isRegister = location.pathname === "/Register";
+
     const auth = getAuth();
     const handleLogout = async () => {
         try {
             await signOut(auth);
-            console.log("User signed out successfully.");
+            goToHome();
         } 
         catch (error) {
             console.error("Error signing out:", error);
@@ -45,16 +56,6 @@ function Header() {
             </div>
         );
     }
-
-    const goToCollections = () => navigate("/MyPalettes");
-    const goToCreate = () => navigate("/Create");
-    const goToLogin = () => navigate("/Login");
-    const goToRegister = () => navigate("/Register");
-
-    const isPalettes = location.pathname === "/MyPalettes";
-    const isCreate = location.pathname === "/Create";
-    const isLogin = location.pathname === "/Login";
-    const isRegister = location.pathname === "/Register";
 
     return (
         <div className="relative gap-6 flex flex-wrap w-full items-center justify-between py-6 px-6 font-[Lato-Regular] sticky top-0 bg-white z-50">

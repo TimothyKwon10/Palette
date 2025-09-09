@@ -11,19 +11,41 @@ function Login() {
     //use states for different fields and page state 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState(''); 
     const navigate = useNavigate();
     const provider = new GoogleAuthProvider();
     
     const handleLogin = async (e) => {
         e.preventDefault();
+        setEmailError('');
+        setPasswordError('');
+
+        let valid = true;
+        if (!email.includes("@")) {
+            setEmailError("Please enter a valid email");
+            valid = false;
+        }
+        if (!password) {
+            setPasswordError("Please enter a password");
+            valid = false;
+        }
+
+        if (!valid) return;
+
         try {
             await signInWithEmailAndPassword(auth, email, password);
 
             navigate('/Home');
         }
         catch (err) {
-            console.log("ERROR WITH LOGIN");
-            console.log(err);
+            if (err.code === "auth/invalid-credential") {
+                setEmailError("Invalid email or password");
+                setPasswordError("Invalid email or password")
+            }
+            if (err.code === "auth/invalid-email") {
+                setEmailError("Please enter a valid email")
+            }
         }
     };
 
@@ -32,14 +54,6 @@ function Login() {
         try {
             await signInWithPopup(auth, provider);
             navigate('/Home');
-
-            const response = await fetch("http://127.0.0.1:8000/admin/refresh-feeds", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  "Authorization": "Bearer AJSHDbjhbqweqey1SABDbi1jskhdbaAm" //NEED TO CHANGEGKJENWN
-                }
-            });
         }
         catch (err) {
             console.log("ERROR WITH GOOGLE REGISTER")
@@ -67,19 +81,40 @@ function Login() {
             >
                 <img src = {Logo} className = "h-14 md:h-16 lg:h-20 w-auto mb-3 sm:mb-4 md:mb-5"></img>
                 <h1 className = "font-[PlayfairDisplay] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center mb-4 sm:mb-6 md:mb-8">Welcome Back</h1>
-                <form onSubmit = {handleLogin} className = "w-2/3 flex flex-col items-center gap-5">
-                    <input
-                        type = "email"
-                        placeholder = "Email"
-                        onChange = {(e) => setEmail(e.target.value)}
-                        className = "w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#fa5902]"
-                    />
-                    <input
-                        type = "password"
-                        placeholder = "Password"
-                        onChange = {(e) => setPassword(e.target.value)}
-                        className = "w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#fa5902]"
-                    />
+                <form noValidate onSubmit = {handleLogin} className = "w-2/3 flex flex-col items-center gap-5">
+                    <div className = "w-full">
+                        <input
+                            type = "email"
+                            placeholder = "Email"
+                            onChange = {(e) => setEmail(e.target.value)}
+                            className = {`w-full p-3 border rounded focus:outline-none focus:ring-[1.5px] ${
+                                emailError ?
+                                "border-red-500 focus:border-[#fa5902] focus:ring-[#fa5902]"
+                                :
+                                "border-gray-300 focus:border-[#fa5902] focus:ring-[#fa5902]"
+                            }`}
+                        />
+                        <p className="text-sm text-red-500 mt-1">
+                            {emailError || ""}
+                        </p>
+                    </div>
+
+                    <div className = "w-full">
+                        <input
+                            type = "password"
+                            placeholder = "Password"
+                            onChange = {(e) => setPassword(e.target.value)} 
+                            className = {`w-full p-3 border rounded focus:outline-none focus:ring-[1.5px] ${
+                                passwordError ?
+                                "border-red-500 focus:border-[#fa5902] focus:ring-[#fa5902]"
+                                :
+                                "border-gray-300 focus:border-[#fa5902] focus:ring-[#fa5902]"
+                            }`}
+                        />
+                        <p className="text-sm text-red-500 mt-1">
+                            {passwordError || ""}
+                        </p>
+                    </div>
                     
                     <button type = "submit" className = "w-full bg-[#fa5902] text-white p-3 rounded hover:bg-[#d94e02] transition">
                         Login

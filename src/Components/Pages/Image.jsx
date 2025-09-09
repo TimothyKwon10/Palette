@@ -276,7 +276,14 @@ function Image() {
     if (checking) {
         return <p>Loading auth...</p>; 
     }
-    if (!image) return  <p className="mt-5 text-center text-gray-500"> Loading image...</p>;
+    if (!image) {
+        return (
+            <div>
+                <Header/>
+                <p className="mt-5 text-center text-gray-500"> Loading image...</p>
+            </div>
+        );
+    }
     
     if (!user) {
         return (

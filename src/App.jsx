@@ -11,20 +11,26 @@ import RequireUpload from './Components/requireUpload';
 import Image from './Components/Pages/Image'
 import Palette from './Components/Pages/Palette'
 import { Toaster } from "react-hot-toast";
+import ScrollToTop from './Components/ScrollToTop';
+import Header from "./Components/Header"
 
 function App() {
 
   const {loggedIn, checkingStatus } = AuthStatus();
   if (checkingStatus) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <h2 className="text-gray-500">Loading...</h2>
+      <div>
+        <Header/>
+        <div className="flex h-screen items-center justify-center">
+          <h2 className="text-gray-500">Loading...</h2>
+        </div>
       </div>
     )
   }
 
   return (
     <>
+      <ScrollToTop/>
       <Routes>
         <Route path="/" element={
           loggedIn ? <Navigate to = "/Home" replace/> : <Navigate to = "/Login" replace/>

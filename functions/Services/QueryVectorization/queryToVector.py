@@ -163,12 +163,12 @@ def root(query: Query):
 
     #run cosine similarity on vector and image matrix 
     similarities = np.dot(image_vector_cache["matrix"], query_vector.T).flatten()
-    top_indices = similarities.argsort()[::-1][:250]
+    top_indices = similarities.argsort()[::-1][:160]
 
-    shuffled_part = top_indices[:100].copy()
+    shuffled_part = top_indices[:80].copy()
     np.random.shuffle(shuffled_part)
 
-    final_indices = np.concatenate([shuffled_part, top_indices[100:]])
+    final_indices = np.concatenate([shuffled_part, top_indices[80:]])
 
     return {
         "matches": [
@@ -181,9 +181,6 @@ def root(query: Query):
             for i in final_indices
         ]
     }
-
-class BatchQuery(BaseModel):
-    texts: List[str]
 
 # @app.post("/admin/refresh-feeds")
 # def generateFeed(authorization: str = Header(None, alias = "Authorization")):
@@ -264,7 +261,7 @@ def build_user_feed(uid: str):
 
     categoriesDict = {
         "Digital Art": "High-quality digital artworks created on a computer, in a variety of styles.",
-        "Photography": "High-quality photographs capturing a subject, scene, or atmosphere.",
+        "Photography": "High-quality photos of people, landscapes, or scenes. Exclude cameras, products, or equipment."
         "Illustration": "A high-quality illustration or drawing with line, form, and color.",
         "3D Art": "A high-quality 3D render or model.",
         "Concept Art": "High-quality concept art exploring mood, setting, or design ideas.",
@@ -291,12 +288,12 @@ def build_user_feed(uid: str):
         if r["id"] not in best:
             best[r["id"]] = r
 
-    # Shuffle personalized + 125 randoms
+    # Shuffle personalized + 50 randoms
     mixed_feed_results = list(best.values())
     random.shuffle(mixed_feed_results)
 
     # Now tack on 100 *purely random* extras at the end
-    extra_randoms = get_random_images(80)
+    extra_randoms = get_random_images(100)
 
     extra_unique = []
     seen_ids = {r["id"] for r in mixed_feed_results}
@@ -332,7 +329,7 @@ def run_batch(texts: list[str]):
 
         query_vector = text_features.squeeze().cpu().numpy().reshape(1, -1)
         similarities = np.dot(image_vector_cache["matrix"], query_vector.T).flatten()
-        top_indices = similarities.argsort()[::-1][:40]
+        top_indices = similarities.argsort()[::-1][:50]
 
         results.extend([
         {

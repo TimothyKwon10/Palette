@@ -12,11 +12,28 @@ function Register() {
     //use states for different fields and page state 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [emailError, setEmailError] = useState('');
+    const [passwordError, setPasswordError] = useState(''); 
     const navigate = useNavigate();
     const provider = new GoogleAuthProvider();
 
     const handleSignUp = async (e) => {
         e.preventDefault();
+        setEmailError('');
+        setPasswordError('');
+
+        let valid = true;
+        if (!email.includes("@")) {
+            setEmailError("Please enter a valid email");
+            valid = false;
+        }
+        if (!password) {
+            setPasswordError("Please enter a password");
+            valid = false;
+        }
+
+        if (!valid) return;
+
         try {
             const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredentials.user;
@@ -25,8 +42,16 @@ function Register() {
             navigate('/Home');
         }
         catch (err) {
-            console.log("ERROR WITH REGISTER");
-            console.log(err);
+            if (err.code === "auth/invalid-credential") {
+                setEmailError("Invalid email or password");
+                setPasswordError("Invalid email or password")
+            }
+            else if (err.code === "auth/invalid-email") {
+                setEmailError("Please enter a valid email")
+            }
+            else {
+                setEmailError("This email is already in use")
+            }
         }
     };
 
@@ -63,19 +88,40 @@ function Register() {
             >
                 <img src = {Logo} className = "h-14 md:h-16 lg:h-20 w-auto mb-3 sm:mb-4 md:mb-5"></img>
                 <h1 className = "font-[PlayfairDisplay] text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center mb-4 sm:mb-6 md:mb-8">Welcome To Palette</h1>
-                <form onSubmit = {handleSignUp} className = "w-2/3 flex flex-col items-center gap-5">
-                    <input
-                        type = "email"
-                        placeholder = "Email"
-                        onChange = {(e) => setEmail(e.target.value)}
-                        className = "w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#019cb9]"
-                    />
-                    <input
-                        type = "password"
-                        placeholder = "Password"
-                        onChange = {(e) => setPassword(e.target.value)}
-                        className = "w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#019cb9]"
-                    />
+                <form noValidate onSubmit = {handleSignUp} className = "w-2/3 flex flex-col items-center gap-5">
+                    <div className = "w-full">
+                        <input
+                            type = "email"
+                            placeholder = "Email"
+                            onChange = {(e) => setEmail(e.target.value)}
+                            className = {`w-full p-3 border rounded focus:outline-none focus:ring-[1.5px] ${
+                                emailError ?
+                                "border-red-500 focus:border-[#019cb9] focus:ring-[#019cb9]"
+                                :
+                                "border-gray-300 focus:border-[#019cb9] focus:ring-[#019cb9]"
+                            }`}
+                        />
+                        <p className="text-sm text-red-500 mt-1">
+                            {emailError || ""}
+                        </p>
+                    </div>
+
+                    <div className = "w-full">
+                        <input
+                            type = "password"
+                            placeholder = "Password"
+                            onChange = {(e) => setPassword(e.target.value)} 
+                            className = {`w-full p-3 border rounded focus:outline-none focus:ring-[1.5px] ${
+                                passwordError ?
+                                "border-red-500 focus:border-[#019cb9] focus:ring-[#019cb9]"
+                                :
+                                "border-gray-300 focus:border-[#019cb9] focus:ring-[#019cb9]"
+                            }`}
+                        />
+                        <p className="text-sm text-red-500 mt-1">
+                            {passwordError || ""}
+                        </p>
+                    </div>
                     
                     <button type = "submit" className = "w-full bg-[#019cb9] text-white p-3 rounded hover:bg-[#017d96] transition">
                         Sign Up
