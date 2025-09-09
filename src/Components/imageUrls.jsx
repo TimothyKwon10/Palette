@@ -13,7 +13,7 @@ export function resolveImage(url = "", isMobile = false) {
     if (!id) return url; // fallback
 
     const width = isMobile ? 600 : 1200;
-    return `/api/CAI/${id}?w=${width}`;
+    return `/api/cai/${id}?w=${width}`;
   }
 
   return url;
