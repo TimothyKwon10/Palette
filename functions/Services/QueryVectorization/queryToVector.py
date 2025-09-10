@@ -385,7 +385,7 @@ async def process_cai_image(
     if not id:
         raise HTTPException(status_code=400, detail="Missing image ID")
 
-    url = f"https://www.artic.edu/iiif/2/{id}/full/{w},/0/default.jpg"
+    url = f"https://www.artic.edu/iiif/2/{id}/full/full/0/default.jpg"
 
     try:
         async with httpx.AsyncClient(timeout=20.0) as client:
