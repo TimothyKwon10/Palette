@@ -382,20 +382,26 @@ async def process_cai_image(
     id: str = Query(..., description="The CAI IIIF image ID"),
     w: int = Query(1200, description="Requested width (default 1200)")
 ):
-    if not id:
-        raise HTTPException(status_code=400, detail="Missing image ID")
+    url = f"https://www.artic.edu/iiif/2/{id}/full/{w},/0/default.jpg"
 
-    url = f"https://www.artic.edu/iiif/2/{id}/full/full/0/default.jpg"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/115.0.0.0 Safari/537.36"
+    }
 
     try:
-        async with httpx.AsyncClient(timeout=20.0) as client:
+        async with httpx.AsyncClient(timeout=60.0, headers=headers, follow_redirects=True) as client:
             r = await client.get(url)
             if r.status_code != 200:
-                raise HTTPException(status_code=r.status_code, detail="Upstream error")
+                raise HTTPException(
+                    status_code=r.status_code,
+                    detail=f"Upstream error {r.status_code} at {url}"
+                )
             return Response(
                 content=r.content,
                 media_type="image/jpeg",
                 headers={"Cache-Control": "public, max-age=31536000, immutable"}
             )
-    except Exception as e:
+    except httpx.RequestError as e:
         raise HTTPException(status_code=502, detail=f"Proxy error: {str(e)}")
