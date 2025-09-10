@@ -8,7 +8,8 @@ function extractAicId(url = "") {
 }
 
 // point this at your Railway service base URL
-const RAILWAY_API_BASE = "https://vectorsearch-production-d8b5.up.railway.app";
+// const RAILWAY_API_BASE = "https://vectorsearch-production-d8b5.up.railway.app";
+const API_BASE = "http://127.0.0.1:8000"
 
 export function resolveImage(url = "", isMobile = false) {
   if (isAIC(url)) {
@@ -16,7 +17,8 @@ export function resolveImage(url = "", isMobile = false) {
     if (!id) return url; // fallback
 
     const width = isMobile ? 600 : 1200;
-    return `${RAILWAY_API_BASE}/cai?id=${id}&w=${width}`;
+    // return `${RAILWAY_API_BASE}/cai?id=${id}&w=${width}`;
+    return `${API_BASE}/cai?id=${id}&w=${width}`;
   }
 
   return url;
