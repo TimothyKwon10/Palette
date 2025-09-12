@@ -18,6 +18,7 @@ app.add_middleware(
     "https://www.palette-gallery.com",
     "https://palette-gallery.com",
     "http://localhost:5173",
+    "https://*.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],

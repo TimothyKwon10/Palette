@@ -1,5 +1,4 @@
 fastapi
-starlette
 uvicorn
 torch
 open_clip_torch
