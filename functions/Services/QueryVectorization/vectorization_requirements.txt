@@ -1,6 +1,8 @@
 fastapi
+starlette
 uvicorn
 torch
 open_clip_torch
 numpy
 firebase-admin
+httpx
