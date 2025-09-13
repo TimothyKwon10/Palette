@@ -16,6 +16,7 @@ Palette is a web application that lets users discover and curate images into per
 
 ## Demo:
 
-<a href="https://palette-gallery.com" target="_blank">
-   <img src="https://img.shields.io/badge/Live%20Demo-Click%20Here-brightgreen?style=for-the-badge" />
-</a>
+  <img src="https://img.shields.io/badge/Live%20Site-gray?style=for-the-badge" />
+  <a href="https://palette-gallery.com" target="_blank">
+    <img src="https://img.shields.io/badge/Click%20Here-brightgreen?style=for-the-badge" />
+  </a>
