@@ -18,7 +18,7 @@ Palette is a visual discovery platform where users can explore, save, and organi
 
 <p align="center">
   <a href="https://palette-gallery.com" target="_blank">
-    <img src="https://img.shields.io/badge/🚀%20Click%20Here%20to%20Launch%20Palette-brightgreen?style=for-the-badge&logoColor=white" height="80">
+    <img src="src/assets/images/Launch.png" alt="Launch Palette"/>
   </a>
 </p>
 
