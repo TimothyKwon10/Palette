@@ -14,14 +14,15 @@ Palette is a visual discovery platform where users can explore, save, and organi
   * User Uploads – add your own images to expand the gallery.
   * Likes & Favorites – save images for quick access and engagement.
 
+Try It Now  
+
+<p align="center">
+  <a href="https://palette-gallery.com" target="_blank">
+    <img src="https://img.shields.io/badge/Click%20Here%20to%20Launch%20Palette-6C63FF?style=for-the-badge&logoColor=white" />
+  </a>
+</p>
+
 ## Demo:
-
-<a href="https://palette-gallery.com" target="_blank"> 
-   <img src="https://img.shields.io/badge/Live%20Site-Click%20Here!-brightgreen?style=for-the-badge" /> 
-</a>
-
-###### (opens in new tab)
-
 
 | Infinite Scroll | Semantic Search |  
 |-----------------|-----------------|  
@@ -58,7 +59,7 @@ Palette is a visual discovery platform where users can explore, save, and organi
 - **Advanced Search Filters** – filter results by tags, colors, styles, or AI-generated attributes.
 - **Collaborative Palettes** – allow multiple users to contribute to shared collections.
 
-### Acknowledgments: 
+## Acknowledgments: 
 
 The images displayed on Palette are **not owned by me** and remain the property of their respective creators and platforms. Full credit goes to the original artists and sources:  
 - [ArtStation](https://www.artstation.com)  
