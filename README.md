@@ -18,7 +18,7 @@ Palette is a visual discovery platform where users can explore, save, and organi
 
 <p align="center">
   <a href="https://palette-gallery.com" target="_blank">
-    <img src="src/assets/images/Launch.png" alt="Launch Palette"/>
+    <img src="src/assets/images/Launch.svg" alt="Launch Palette"/>
   </a>
 </p>
 
