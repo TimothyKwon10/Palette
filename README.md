@@ -46,7 +46,7 @@ Palette is a visual discovery platform where users can explore, save, and organi
 - ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)  
 - ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)  
 - ![RunPod](https://img.shields.io/badge/RunPod-6C63FF?style=for-the-badge&logoColor=white)
-- ![Railway](https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)
+- ![Railway](https://img.shields.io/badge/Railway-E63946?style=for-the-badge&logo=railway&logoColor=white)
 
 ### AI Backend (run via RunPod GPU)
 - RAM++ – multi-label image tagging  
