@@ -17,10 +17,19 @@ Palette is a visual discovery platform where users can explore, save, and organi
 ## Try It Now:
 
 <p align="center">
-  <a href="https://palette-gallery.com" target="_blank">
-    <img src="https://img.shields.io/badge/Click%20Here%20to%20Launch%20Palette-00C853?style=for-the-badge&logoColor=white" height="70"/>
+  <a href="https://palette-gallery.com" target="_blank" style="
+    display: inline-block;
+    background-color: #00C853;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px 30px;
+    border-radius: 8px;
+    text-decoration: none;">
+    Click Here to Launch Palette
   </a>
 </p>
+
 
 ## Demo:
 
