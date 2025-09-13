@@ -33,41 +33,19 @@ Palette is a web application that lets users discover and curate images into per
 
 ## Tech Stack:
 
-#### Languages
+## 🔨 Built With  
 
-**JavaScript (Node.js)** – frontend logic, API calls, and web scraping utilities
+- ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)  
+- ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)  
+- ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)  
+- ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)  
+- ![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)  
+- ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)  
+- ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)  
+- ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)  
+- ![RunPod](https://img.shields.io/badge/RunPod-000000?style=for-the-badge&logoColor=white) (GPU hosting)  
+- ![Railway](https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)  
 
-**Python** – backend services, AI/ML pipelines
-
-#### Frontend
-
-**React (Vite)** – fast, component-based UI framework
-
-**Tailwind CSS** – responsive, utility-first styling
-
-**React Router** – client-side routing
-
-#### Backend
-
-**FastAPI** – lightweight Python API server
-
-**Railway** – deployment of containerized backend services
-
-**RunPod** – GPU acceleration for AI inference
-
-#### Database & Cloud
-
-**Firebase Firestore** – real-time NoSQL database
-
-**Firebase Auth** – user authentication
-
-**Firebase Storage** – image hosting & serving
-
-#### AI / ML Models
-
-**RAM++** – automatic multi-label image tagging
-
-**OpenCLIP (ViT-B/32, laion2b_s34b_b79k)** – semantic embeddings for search & personalized feeds
 
 #### Other Infrastructure
 
