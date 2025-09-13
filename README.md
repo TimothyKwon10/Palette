@@ -4,7 +4,7 @@
 
 ## Overview:
 
-Palette is a visual discovery platform where users can explore, save, and organize artwork into personal collections called Palettes. The platform supports infinite scrolling feeds, user uploads, and curation features such as personalized content and likes. Powered by AI models, Palette automatically tags images and enables semantic search, so users can discover content beyond simple keyword matching.
+Palette is a visual discovery platform where users can explore and organize artwork into personal collections called Palettes. Designed to inspire creativity, it combines a modern browsing experience with AI-powered search and tagging. Instead of relying only on keywords, Palette uses intelligent models to surface relevant and personalized content, making discovery seamless and engaging.
 
 ## Features:
   * Infinite Scrolling – browse large image libraries without page reloads.
