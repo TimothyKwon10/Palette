@@ -1,12 +1,11 @@
-# React + Vite
+Palette: A visual discovery platform for artists powered by AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Palette is a web application that lets users discover and curate images into personal collections, called Palettes. By leveraging AI models for automatic tagging and semantic search, it provides a personalized browsing experience that scales seamlessly. The platform is built with React,  Firebase, and GPU-backed FastAPI services, showcasing both frontend design and backend architecture optimized for performance.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Features:
+  * Infinite Scrolling – browse large image libraries without page reloads.
+  * AI Tagging & Semantic Search – powered by RAM++ and CLIP for automatic multi-label tagging and vector search.
+  * Personalized Feeds – recommendations tailored to user preferences.
+  * Collections (“Palettes”) – curate and organize images into themed boards.
+  * User Uploads – add your own images to expand the gallery.
+  * Likes & Favorites – save images for quick access and engagement.
