@@ -4,7 +4,7 @@
 
 ## Overview:
 
-Palette is a web application that lets users discover and curate images into personal collections, called Palettes. By leveraging **AI models for automatic tagging and semantic search**, it provides a personalized browsing experience that scales seamlessly. The platform is built with React, Firebase, and GPU-backed FastAPI services, showcasing both frontend design and backend architecture optimized for performance.
+Palette is a visual discovery platform where users can explore, save, and organize artwork into personal collections called Palettes. The platform supports infinite scrolling feeds, user uploads, and curation features such as personalized content and likes. Powered by AI models, Palette automatically tags images and enables semantic search, so users can discover content beyond simple keyword matching.
 
 ## Features:
   * Infinite Scrolling – browse large image libraries without page reloads.
@@ -43,9 +43,29 @@ Palette is a web application that lets users discover and curate images into per
 - ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)  
 - ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)  
 - ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)  
-- ![RunPod](https://img.shields.io/badge/RunPod-GPU%20Hosting?style=for-the-badge&labelColor=6C63FF&color=555555)
+- ![RunPod](https://img.shields.io/badge/RunPod-6C63FF?style=for-the-badge&logoColor=white)
 - ![Railway](https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)
 
 ### AI Backend (run via RunPod GPU)
 - RAM++ – multi-label image tagging  
 - OpenCLIP (ViT-B/32, laion2b_s34b_b79k) – semantic embeddings for search & personalization  
+
+## Road Map:
+
+- **Improved Responsive Design** – enhance mobile layouts and touch interactions for a seamless experience across devices.
+- **User Interactivity** – introduce comments on images and Palettes to foster community engagement.
+- **Public Likes** – make likes visible to all users, creating social proof and helping popular content stand out.
+- **Advanced Search Filters** – filter results by tags, colors, styles, or AI-generated attributes.
+- **Collaborative Palettes** – allow multiple users to contribute to shared collections.
+
+### Acknowledgments: 
+
+The images displayed on Palette are **not owned by me** and remain the property of their respective creators and platforms. Full credit goes to the original artists and sources:  
+- [ArtStation](https://www.artstation.com)  
+- [Chicago Art Institute](https://www.artic.edu)  
+- [Pexels](https://www.pexels.com)  
+- [DeviantArt](https://www.deviantart.com)  
+
+Palette’s AI-powered features are built using:  
+- [OpenCLIP](https://github.com/mlfoundations/open_clip)  
+- [RAM++](https://github.com/xinyu1205/recognize-anything)  
