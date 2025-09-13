@@ -43,7 +43,7 @@ Palette is a web application that lets users discover and curate images into per
 - ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)  
 - ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)  
 - ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)  
-- ![RunPod](https://img.shields.io/badge/RunPod-000000?style=for-the-badge&logoColor=white) (GPU hosting)  
+- ![RunPod](https://img.shields.io/badge/RunPod-GPU_Hosting-6C63FF?style=for-the-badge)
 - ![Railway](https://img.shields.io/badge/Railway-0B0D0E?style=for-the-badge&logo=railway&logoColor=white)  
 
 
