@@ -27,11 +27,11 @@ Palette is a visual discovery platform where users can explore and organize artw
 
 | Infinite Scroll | Semantic Search |  
 |-----------------|-----------------|  
-| ![](demo/scroll.gif) | ![](demo/search.gif) |  
+| ![Scroll Demo](src/assets/images/Infinite_Scroll.mp4) | ![Search Demo](src/assets/images/Semantic_Search.mp4) |  
 
 | Collections (Palettes) | Personalized Feed |  
 |-------------------------|-------------------|  
-| ![](demo/palette.gif) | ![](demo/signup_feed.gif) |  
+| ![Palette Demo](src/assets/images/Palette.mp4) | ![Personalized Feed](src/assets/images/Personal_Feed.mp4) |  
 
 ## Tech Stack:
 
