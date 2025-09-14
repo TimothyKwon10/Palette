@@ -27,7 +27,7 @@ Palette is a visual discovery platform where users can explore and organize artw
 
 | Infinite Scroll | Semantic Search |  
 |-----------------|-----------------|  
-| [![Scroll Demo](src/assets/images/Infinite_Scroll.png)](src/assets/images/Infinite_Scroll.mp4) | [![Search Demo](src/assets/images/Semantic_Search.png)](src/assets/images/Semantic_Search.mp4) | 
+| [![Scroll Demo](src/assets/images/Infinite_Scroll.png)](https://github.com/TimothyKwon10/Palette/releases/download/Demo/Infinite_Scroll.mp4) | [![Search Demo](src/assets/images/Semantic_Search.png)](src/assets/images/Semantic_Search.mp4) | 
 
 | Collections (Palettes) | Personalized Feed |  
 |-------------------------|-------------------|  
