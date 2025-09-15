@@ -8,9 +8,9 @@ on:
     - cron: "0 13 * * *"
 
 jobs:
-  railway-control:
+  pause-service:
+    if: github.event.schedule == '0 5 * * *'
     runs-on: ubuntu-latest
-
     steps:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
@@ -18,10 +18,18 @@ jobs:
       - name: Authenticate with Railway
         run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
 
-      - name: Pause Service at 9 PM PST
-        if: github.event.schedule == '0 5 * * *'
+      - name: Pause Service
         run: railway service pause 6479a5ac-eabe-40a4-bd92-ac123e0ccf39 --project d0d96ce4-a2b6-488e-b79d-5e8a34a89d03
 
-      - name: Resume Service at 5 AM PST
-        if: github.event.schedule == '0 13 * * *'
+  resume-service:
+    if: github.event.schedule == '0 13 * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Authenticate with Railway
+        run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Resume Service
         run: railway service unpause 6479a5ac-eabe-40a4-bd92-ac123e0ccf39 --project d0d96ce4-a2b6-488e-b79d-5e8a34a89d03
