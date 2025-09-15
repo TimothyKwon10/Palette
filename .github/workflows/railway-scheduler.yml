@@ -20,8 +20,8 @@ jobs:
 
       - name: Pause Service at 9 PM PST
         if: github.event.schedule == '0 5 * * *'
-        run: railway service pause <service-id> --project <project-id>
+        run: railway service pause 6479a5ac-eabe-40a4-bd92-ac123e0ccf39 --project d0d96ce4-a2b6-488e-b79d-5e8a34a89d03
 
       - name: Resume Service at 5 AM PST
         if: github.event.schedule == '0 13 * * *'
-        run: railway service unpause <service-id> --project <project-id>
+        run: railway service unpause 6479a5ac-eabe-40a4-bd92-ac123e0ccf39 --project d0d96ce4-a2b6-488e-b79d-5e8a34a89d03
