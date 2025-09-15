@@ -1,0 +1,27 @@
+name: Railway Scheduler
+
+on:
+  schedule:
+    # Pause at 9 PM PST (05:00 UTC)
+    - cron: "0 5 * * *"
+    # Resume at 5 AM PST (13:00 UTC)
+    - cron: "0 13 * * *"
+
+jobs:
+  railway-control:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Authenticate with Railway
+        run: railway login --token ${{ secrets.RAILWAY_TOKEN }}
+
+      - name: Pause Service at 9 PM PST
+        if: github.event.schedule == '0 5 * * *'
+        run: railway service pause <service-id> --project <project-id>
+
+      - name: Resume Service at 5 AM PST
+        if: github.event.schedule == '0 13 * * *'
+        run: railway service unpause <service-id> --project <project-id>
