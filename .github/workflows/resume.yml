@@ -1,0 +1,13 @@
+name: Railway Resume
+
+on:
+  schedule:
+    - cron: "0 13 * * *"
+
+jobs:
+  resume-service:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm install -g @railway/cli
+      - run: railway login --ci --token ${{ secrets.RAILWAY_TOKEN }}
+      - run: railway service unpause 6479a5ac-eabe-40a4-bd92-ac123e0ccf39 --project d0d96ce4-a2b6-488e-b79d-5e8a34a89d03
